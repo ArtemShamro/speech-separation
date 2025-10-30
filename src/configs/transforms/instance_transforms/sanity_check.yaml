@@ -1,0 +1,12 @@
+train:
+  get_spectrogram:
+    _target_: torchaudio.transforms.Spectrogram
+    n_fft: 512
+    hop_length: 128
+    power: null
+inference:
+  get_spectrogram:
+    _target_: torchaudio.transforms.Spectrogram
+    n_fft: 512
+    hop_length: 128
+    power: null

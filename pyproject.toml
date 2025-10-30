@@ -1,0 +1,42 @@
+[project]
+name = "SpeachSeapration"
+version = "0.1.0"
+description = ""
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "torch==2.5.1+cu121",
+    "torchvision==0.20.1+cu121",
+    "torchaudio==2.5.1+cu121",
+    "soundfile",
+    "numpy==1.26.4",
+    "torch-audiomentations",
+    "tqdm",
+    "matplotlib",
+    "pandas",
+    "comet-ml",
+    "hydra-core",
+    "dotenv>=0.9.9",
+    "torchlibrosa>=0.1.0",
+    "accelerate>=1.10.1",
+    "torchmetrics>=1.8.2",
+    "gdown>=5.2.0",
+    "datasets>=4.3.0",
+    "wget>=3.2",
+    "tokenizers>=0.22.1",
+]
+
+[tool.uv.sources]
+torch = { index = "pytorch-cu121" }
+torchvision = { index = "pytorch-cu121" }
+torchaudio = { index = "pytorch-cu121" }
+markupsafe = { index = "pypi" }
+
+[[tool.uv.index]]
+name = "pypi"
+url = "https://pypi.org/simple"
+
+[[tool.uv.index]]
+name = "pytorch-cu121"
+url = "https://download.pytorch.org/whl/cu121"

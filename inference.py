@@ -1,0 +1,80 @@
+import warnings
+
+import hydra
+import torch
+from hydra.utils import instantiate
+
+from src.logger import ModelLoader
+from src.datasets.data_utils import get_dataloaders
+from src.trainer import Inferencer
+from src.utils.init_utils import set_random_seed
+from src.utils.io_utils import ROOT_PATH
+
+import logging
+
+warnings.filterwarnings("ignore", category=UserWarning)
+
+
+@hydra.main(version_base=None, config_path="src/configs", config_name="inference")
+def main(config):
+    """
+    Main script for inference. Instantiates the model, metrics, and
+    dataloaders. Runs Inferencer to calculate metrics and (or)
+    save predictions.
+
+    Args:
+        config (DictConfig): hydra experiment config.
+    """
+    set_random_seed(config.inferencer.seed)
+
+    if config.inferencer.device == "auto":
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+    else:
+        device = config.inferencer.device
+
+    # setup text_encoder
+    logger = logging.getLogger(__name__)
+    # setup data_loader instances
+    # batch_transforms should be put on device
+    dataloaders, batch_transforms = get_dataloaders(config, device)
+
+    # build model architecture, then print to console
+    model_loader = ModelLoader(config, logger)
+
+    # save_path for model predictions
+    save_path = ROOT_PATH / "data" / "saved" / config.inferencer.save_path
+    save_path.mkdir(exist_ok=True, parents=True)
+
+    model = instantiate(config.model).to(device)
+    model = model_loader.load(model, save_path)
+    logger.info(model)
+
+    # get metrics
+    metrics = {"inference": []}
+    for metric_config in config.metrics.get("inference", []):
+        # use text_encoder in metrics
+        metrics["inference"].append(
+            instantiate(metric_config)
+        )
+
+    inferencer = Inferencer(
+        model=model,
+        config=config,
+        device=device,
+        dataloaders=dataloaders,
+        batch_transforms=batch_transforms,
+        save_path=save_path,
+        metrics=metrics,
+        logger=logger,
+    )
+
+    logs = inferencer.run_inference()
+
+    for part in logs.keys():
+        for key, value in logs[part].items():
+            full_key = part + "_" + key
+            print(f"    {full_key:15s}: {value}")
+
+
+if __name__ == "__main__":
+    main()
