@@ -1,0 +1,6 @@
+_target_: src.model.DTTNetModel
+fc_dim: 257
+g: 32
+n_heads: 2
+n_layers: 3
+n_idp_layers: 4
