@@ -25,6 +25,7 @@ dependencies = [
     "datasets>=4.3.0",
     "wget>=3.2",
     "tokenizers>=0.22.1",
+    "typer>=0.20.0",
 ]
 
 [tool.uv.sources]
