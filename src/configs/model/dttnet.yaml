@@ -1,6 +1,7 @@
 _target_: src.model.DTTNetModel
-fc_dim: 257
+fc_dim: ${eval:"${transforms.instance_transforms.train.get_spectrogram.n_fft} // 2 + 1"}
 g: 32
 n_heads: 2
 n_layers: 3
 n_idp_layers: 4
+use_checkpoints: True

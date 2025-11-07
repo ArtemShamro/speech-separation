@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from torch.nn import functional as F
 from src.model.DTTNet.blocks.block_tfc_tdf import TFC_TDF_Block
+from torch.utils.checkpoint import checkpoint
 
 
 class LatentModule(nn.Module):

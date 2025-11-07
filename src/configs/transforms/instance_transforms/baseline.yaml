@@ -1,8 +1,8 @@
 train:
   get_spectrogram:
     _target_: torchaudio.transforms.Spectrogram
-    n_fft: 512
-    hop_length: 128
+    n_fft: 6144
+    hop_length: 1024
     power: null
   # audio transforms for mix and sources
   audio_consistent:
@@ -10,11 +10,11 @@ train:
     transforms:
       - _target_: src.transforms.wav_augs.SpeedPerturb
         speeds: [0.9, 1.1]
-        p: 0.7
+        p: 0.5
       - _target_: src.transforms.wav_augs.Gain
         min_gain_in_db: -6
         max_gain_in_db: 6
-        p: 0.7
+        p: 0.5
   audio: # audio transforms only for mix
     _target_: torchvision.transforms.v2.Compose
     transforms:
@@ -22,7 +22,7 @@ train:
         min_snr_in_db: 10
         max_snr_in_db: 30
         sample_rate: 16000
-        p: 0.8
+        p: 0.3
       # - _target_: src.transforms.wav_augs.ApplyImpulseResponse
       #   p: 0.2
       #   sample_rate: 16000
@@ -55,6 +55,6 @@ train:
 inference:
   get_spectrogram:
     _target_: torchaudio.transforms.Spectrogram
-    n_fft: 512
-    hop_length: 128
+    n_fft: 6144
+    hop_length: 1024
     power: null

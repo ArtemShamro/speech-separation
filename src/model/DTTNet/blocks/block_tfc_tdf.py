@@ -1,11 +1,13 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
+from torch.utils.checkpoint import checkpoint
 
 
 class TFC_TDF_Block(nn.Module):
-    def __init__(self, channels, fc_dim, bf=2):
+    def __init__(self, channels, fc_dim, bf=2, use_checkpoints=False):
         super().__init__()
+        self.use_checkpoints = use_checkpoints
 
         def conv_block():
             return nn.Sequential(
@@ -31,10 +33,19 @@ class TFC_TDF_Block(nn.Module):
 
     def forward(self, x: torch.Tensor):
         x_skip = self.skip_conv(x)
-        x_fc_skip = self.conv1(x)
+        if self.use_checkpoints:
+            x_fc_skip = checkpoint(self.conv1, x)
+        else:
+            x_fc_skip = self.conv1(x)
+
         out = self.fc(x_fc_skip.transpose(-1, -2)).transpose(-1, -2)
         out += x_fc_skip
-        out = self.conv2(out)
+
+        if self.use_checkpoints:
+            out = checkpoint(self.conv2, out)
+        else:
+            out = self.conv2(out)
+
         out += x_skip
 
         return out

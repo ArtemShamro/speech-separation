@@ -7,7 +7,7 @@ from .modules.latent import LatentModule
 
 
 class DTTNetModel(nn.Module):
-    def __init__(self, fc_dim, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=1):
+    def __init__(self, fc_dim, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=2, use_checkpoints=False):
         super().__init__()
         self.n_sources = n_sources
         self.n_fft = n_fft
@@ -17,7 +17,8 @@ class DTTNetModel(nn.Module):
             fc_dim,
             in_channels=2,
             out_channels=g,
-            n_layers=n_layers
+            n_layers=n_layers,
+            use_checkpoints=use_checkpoints,
         )
 
         self.decoder = Decoder(
@@ -25,6 +26,7 @@ class DTTNetModel(nn.Module):
             out_channels=g,
             n_sources=n_sources,
             n_layers=n_layers,
+            use_checkpoints=use_checkpoints,
         )
 
         self.latent = LatentModule(
@@ -48,7 +50,6 @@ class DTTNetModel(nn.Module):
             mask_spec = masks[:, i, 0]          # [B, F, T]
             mask_phase = masks[:, i, 1]         # [B, F, T]
 
-            # та же формула, что в baseline_model.py
             source_spec, source_phase = self.recon_signal_spectral(
                 spectrogram, phase, mask_spec, mask_phase
             )

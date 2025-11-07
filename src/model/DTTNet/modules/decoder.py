@@ -3,10 +3,11 @@ from torch import nn
 from torch.nn import functional as F
 from src.model.DTTNet.blocks.block_tfc_tdf import TFC_TDF_Block
 from src.model.DTTNet.blocks.block_sampling import UpSamplingBlock
+from torch.utils.checkpoint import checkpoint
 
 
 class Decoder(nn.Module):
-    def __init__(self, fc_dim, out_channels=32, n_sources=2, n_layers=3):
+    def __init__(self, fc_dim, out_channels=32, n_sources=2, n_layers=3, use_checkpoints=False):
         super().__init__()
         self.out_conv = nn.Conv2d(out_channels, n_sources * 2, 1)
 
@@ -18,6 +19,7 @@ class Decoder(nn.Module):
                 DecoderBlock(
                     fc_dim=dec_dim // (2 ** layer_idx),
                     channels=out_channels * 2 ** (layer_idx),
+                    use_checkpoints=use_checkpoints,
                 )
             )
 
@@ -29,10 +31,9 @@ class Decoder(nn.Module):
 
 
 class DecoderBlock(nn.Module):
-    def __init__(self, fc_dim, channels=32):
+    def __init__(self, fc_dim, channels=32, use_checkpoints=False):
         super().__init__()
-        # print(f"Decoder Block : init : channels {channels}")
-        self.tfc_tdf = TFC_TDF_Block(channels, fc_dim, bf=2)
+        self.tfc_tdf = TFC_TDF_Block(channels, fc_dim, bf=2, use_checkpoints=use_checkpoints)
         self.upsampling = UpSamplingBlock(channels)
 
     def forward(self, x, skip):

@@ -48,7 +48,7 @@ def get_accelerator() -> Accelerator:
         torch._dynamo.config.capture_scalar_outputs = True
         torch._dynamo.config.optimize_ddp = False
         torch._dynamo.config.suppress_errors = True
-        torch._inductor.config.triton.cudagraph_skip_dynamic_graphs = True
+        # torch._inductor.config.triton.cudagraph_skip_dynamic_graphs = True
 
     return accelerator
 
