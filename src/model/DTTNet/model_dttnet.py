@@ -7,11 +7,12 @@ from .modules.latent import LatentModule
 
 
 class DTTNetModel(nn.Module):
-    def __init__(self, fc_dim, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=2, use_checkpoints=False):
+    def __init__(self, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=2, use_checkpoints=False):
         super().__init__()
         self.n_sources = n_sources
         self.n_fft = n_fft
         self.hop_length = hop_length
+        fc_dim = n_fft // 2 + 1
 
         self.encoder = Encoder(
             fc_dim,

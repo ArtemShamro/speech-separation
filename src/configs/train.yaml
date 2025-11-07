@@ -37,7 +37,7 @@ trainer:
   use_profiler: False
   log_step: 100
   n_epochs: 100
-  epoch_len: 300
+  epoch_len: 600
   device_tensors: ["spectrogram", "phase", "sources", "audio", "audio_length"] # which tensors should be on device (ex. GPU)
   # patterns:
   # no resume

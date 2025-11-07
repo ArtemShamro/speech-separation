@@ -1,6 +1,4 @@
-train: 
-  - _target_: src.metrics.SiSnrIPITWrapper
-    name: "SI-SNRi"
+train: []
 inference: 
   - _target_: src.metrics.SiSnrIPITWrapper
     name: "SI-SNRi"

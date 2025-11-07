@@ -1,4 +1,4 @@
-batch_size: 64
+batch_size: 32
 loader:
   _target_: torch.utils.data.DataLoader
   pin_memory: True
