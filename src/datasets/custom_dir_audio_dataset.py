@@ -12,7 +12,7 @@ from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirAudioDataset(BaseDataset):
-    def __init__(self, data_path, mouths_dir=None, temp_dir=None, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
+    def __init__(self, data_path, video_dir=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
         self.dataset_name = dataset_name
         data_path = Path(data_path)
 
@@ -25,17 +25,17 @@ class CustomDirAudioDataset(BaseDataset):
 
         self._mix_dir = self._data_dir / "mix"
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
-        self._mouths_dir = mouths_dir
+        self._video_dir = video_dir
 
         assert self._mix_dir.exists(), f"Audio directory not found: {self._mix_dir}"
 
-        index = self._get_or_load_index()
+        index = self._get_or_load_index(reindex)
 
         super().__init__(index, *args, **kwargs)
 
-    def _get_or_load_index(self):
+    def _get_or_load_index(self, reindex=False):
         index_path = self._temp_dir / f"{self.dataset_name}_index.json"
-        if index_path.exists():
+        if index_path.exists() and not reindex:
             with index_path.open() as f:
                 index = json.load(f)
         else:
@@ -63,13 +63,15 @@ class CustomDirAudioDataset(BaseDataset):
                 "audio_len": audio_len,
             }
 
-            for source_dir in self._sources:
+            for source_idx, source_dir in enumerate(self._sources):
                 index_element.update({f"{source_dir.name}_path": str(
                     (source_dir / audio_file.name).absolute().resolve())})
 
-            if self._mouths_dir is not None:
-                mouth_file = self._mouths_dir / Path(f"{str(audio_file.name).split("_")[0]}.npz")
-                index_element.update({"mouth_path": str(mouth_file.absolute().resolve())})
+                if self._video_dir is not None:
+                    mouth_file = self._video_dir / \
+                        Path(f"{str(audio_file.stem).split("_")[source_idx]}.npz")
+                    index_element.update(
+                        {f"{source_dir.name}_video_path": str(mouth_file.absolute().resolve())})
 
             index.append(index_element)
 

@@ -54,10 +54,14 @@ def collate_fn(dataset_items: list[dict]):
         source_phases_batch = torch.nn.utils.rnn.pad_sequence(
             source_phases, batch_first=True, padding_value=0.0).transpose(-2, -1)
 
+        source_video = torch.tensor([item["sources"][source_idx]["video"]
+                                     for item in dataset_items])
+
         sources_list.append({
             "audio": source_audio_batch,
             "spectrogram": source_specs_batch,
             "phase": source_phases_batch,
+            "video": source_video
         })
 
     return {

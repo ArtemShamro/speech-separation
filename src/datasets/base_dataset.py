@@ -103,10 +103,14 @@ class BaseDataset(Dataset):
             source_audio = self.preprocess_audio(source_audio, consistent_only=True)
             source_magnitude, source_phase = self.get_spectrogram(source_audio)
 
+            source_video_path = data_dict[f"{sorce_name}_video_path"]
+            source_video = np.load(source_video_path)["data"]
+
             source_data = {
                 "audio": source_audio,
                 "spectrogram": source_magnitude,
                 "phase": source_phase,
+                "video": source_video
             }
 
             sources.append(source_data)

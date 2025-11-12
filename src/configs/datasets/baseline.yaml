@@ -4,7 +4,7 @@ train:
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
   data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/val"
-  # mouths_dir
+  video_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/mouths"
 
   # data_dir: "/kaggle/input/librispeech"
 # we filter partitions in one batch test to check the pipeline
@@ -15,3 +15,4 @@ val:
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
   data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/val"
+  video_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/mouths"

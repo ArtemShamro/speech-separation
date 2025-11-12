@@ -4,6 +4,7 @@ train:
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
   data_path: "/home/dlamaster/data/dla_dataset/audio/train"
+  video_path: "/home/dlamaster/data/dla_dataset/mouths"
   # data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/train"
   # mouths_dir
 
@@ -15,3 +16,4 @@ val:
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
   data_path: "/home/dlamaster/data/dla_dataset/audio/val"
+  video_path: "/home/dlamaster/data/dla_dataset/mouths"
