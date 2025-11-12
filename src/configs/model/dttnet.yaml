@@ -1,0 +1,9 @@
+_target_: src.model.DTTNetModel
+g: 32
+n_sources: 2
+n_layers: 3
+n_idp_layers: 4
+n_heads: 2
+use_checkpoints: True
+n_fft: ${transforms.instance_transforms.train.get_spectrogram.n_fft}
+hop_length: ${transforms.instance_transforms.train.get_spectrogram.hop_length}
