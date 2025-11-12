@@ -79,8 +79,9 @@ class TC_FC_RNN(nn.Module):
     def __init__(self, n_heads, in_chanels):
         super().__init__()
 
+        groups = max(1, in_chanels // 16)
         self.norm = nn.GroupNorm(
-            num_groups=n_heads,
+            num_groups=groups,
             num_channels=in_chanels,
         )
 
