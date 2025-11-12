@@ -56,3 +56,4 @@ trainer:
   seed: 1
   hugging_face_repo: "areshx/test_repo@main" # "repo@branch"
   train_log_items: 10 # n_items to log wav and wav_aug each train logtime
+  # max_grad_norm: 1
