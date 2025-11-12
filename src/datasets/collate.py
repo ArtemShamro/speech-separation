@@ -40,6 +40,10 @@ def collate_fn(dataset_items: list[dict]):
 
     sources_list = []
     n_sources = len(dataset_items[0]['sources'])
+
+    video_batch = torch.stack([torch.stack([torch.tensor(item["sources"][source_idx]["video"])
+                              for source_idx in range(n_sources)]) for item in dataset_items])
+
     for source_idx in range(n_sources):
         source_specs = [item["sources"][source_idx]["spectrogram"].squeeze(0).transpose(0, 1)
                         for item in dataset_items]
@@ -54,14 +58,10 @@ def collate_fn(dataset_items: list[dict]):
         source_phases_batch = torch.nn.utils.rnn.pad_sequence(
             source_phases, batch_first=True, padding_value=0.0).transpose(-2, -1)
 
-        source_video = torch.tensor([item["sources"][source_idx]["video"]
-                                     for item in dataset_items])
-
         sources_list.append({
             "audio": source_audio_batch,
             "spectrogram": source_specs_batch,
             "phase": source_phases_batch,
-            "video": source_video
         })
 
     return {
@@ -69,7 +69,8 @@ def collate_fn(dataset_items: list[dict]):
         "phase": phases_batch,
         "spectrogram_length": specs_lens,
         "audio": audio_batch,
-        "audio_length": audio_lens,
+        "video": video_batch,
+        "audio_lengths": audio_lens,
         "sources": sources_list,
         "audio_original": audio_original,
         "audio_path": audio_path,
