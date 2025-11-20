@@ -107,6 +107,7 @@ data/
 input/
 saved/
 wandb/
+*checkpoints/
 .cometml-runs/
 outputs/
 
