@@ -102,18 +102,20 @@ class BaseDataset(Dataset):
             source_audio = self.load_audio(source_path)
             source_audio = self.preprocess_audio(source_audio, consistent_only=True)
             source_magnitude, source_phase = self.get_spectrogram(source_audio)
-
-            source_video_path = data_dict[f"{sorce_name}_video_path"]
-            source_video = np.load(source_video_path)["data"]
-
+ 
             source_data = {
                 "audio": source_audio,
                 "spectrogram": source_magnitude,
                 "phase": source_phase,
-                "video": source_video
             }
 
             sources.append(source_data)
+
+        if data_dict.get("mouth1_path") is None or data_dict.get("mouth2_path") is None or data_dict["mouth1_path"] is None or data_dict["mouth2_path"] is None:
+            mouth1 = mouth2 = None
+        else:
+            mouth1 = np.load(data_dict["mouth1_path"])["data"]
+            mouth2 = np.load(data_dict["mouth2_path"])["data"]
 
         instance_data = {
             "audio": mix_audio,
@@ -122,6 +124,8 @@ class BaseDataset(Dataset):
             "phase": mix_phase,
             "sources": sources,
             "audio_path": mix_path,
+            "mouth1": mouth1,
+            "mouth2": mouth2
         }
 
         instance_data = self.preprocess_data(instance_data)
