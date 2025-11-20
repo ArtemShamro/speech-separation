@@ -33,8 +33,11 @@ class VideoEncoderModule(nn.Module):
         if load_weights_path is not None:
             self._load_weights(load_weights_path)
 
-    def forward(self, x):
-        return self.encoder(x)
+    def forward(self, video_batch):
+        B, C, T, H, W = video_batch.shape
+        video_len = T
+        out = self.encoder(video_batch.reshape(B * C, 1, T, H, W), video_len).reshape(B, C, T, 1024)
+        return out
 
     def _load_weights(self, load_path):
         assert os.path.isfile(

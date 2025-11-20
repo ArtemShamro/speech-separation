@@ -15,7 +15,7 @@ class RTFSNetModel(nn.Module):
         n_sources=2,
         n_fft=512,
         hop_length=128,
-        video_encoder_model: str = "model name",  # modek name from repo
+        video_encoder_weights_path: str = "/media/atem/Data/HSE_videos/4_DLA/hw_2_SeppechSep/git_speech_separation/src/model/lipreading/lrw_snv1x_dsmstcn3x.pth",  # modek name from repo
         use_checkpoints=False,
     ):
         """
@@ -29,7 +29,8 @@ class RTFSNetModel(nn.Module):
         self.hop_length = hop_length
         fc_dim = n_fft // 2 + 1
 
-        self.video_encoder = VideoEncoderModule()  # CTC_lip
+        self.video_encoder = VideoEncoderModule(
+            load_weights_path=video_encoder_weights_path)
 
         self.audio_encoder = AudioEncoderModule(
             in_channels=2,
@@ -44,7 +45,7 @@ class RTFSNetModel(nn.Module):
 
     def forward(self, spectrogram, phase, audio_length, video, **batch):
 
-        video_encoded = self.video_encoder(video)
+        video_encoded = self.video_encoder(video)  # [B, n_sources, T_v, 1024]
 
         audio_encoded = self.audio_encoder(spectrogram, phase)  # [C_a, T_a, F]
 

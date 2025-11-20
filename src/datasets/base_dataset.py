@@ -103,6 +103,13 @@ class BaseDataset(Dataset):
             source_audio = self.preprocess_audio(source_audio, consistent_only=True)
             source_magnitude, source_phase = self.get_spectrogram(source_audio)
 
+<<<<<<< HEAD
+=======
+            source_video_path = data_dict[f"{sorce_name}_video_path"]
+            source_video = np.load(source_video_path)["data"]
+            if self.instance_transforms is not None and self.instance_transforms.get("video", None):
+                source_video = self.instance_transforms["video"](source_video)
+>>>>>>> 5ed4281 (model/RTFSNet)
             source_data = {
                 "audio": source_audio,
                 "spectrogram": source_magnitude,

@@ -21,7 +21,7 @@ class SeparationNetwork(nn.Module):
     def forward(self, audio_encoded: Tensor, video_encoded: Tensor) -> Tensor:
 
         audio_preprocessed = self.audio_preprocess(audio_encoded)  # [C_a, T_a, F]
-        video_preprocessed = self.video_preprocess(video_encoded)  # ???
+        video_preprocessed = self.video_preprocess(video_encoded)  # [B, n_sources, T_v, 1024] ->
 
         fused_data = self.CAF_block(audio_preprocessed, video_preprocessed)  # [C_a, T_a, F]
 

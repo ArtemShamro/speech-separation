@@ -4,9 +4,33 @@ train:
     n_fft: 512
     hop_length: 128
     power: null
+  video:
+    _target_: src.model.lipreading.preprocess.Compose
+    preprocess:
+      - _target_: src.model.lipreading.preprocess.Normalize
+        mean : 0.0
+        std: 255.0
+      - _target_: src.model.lipreading.preprocess.CenterCrop
+        size : [88, 88]
+      - _target_: src.model.lipreading.preprocess.Normalize
+        mean : 0.421
+        std: 0.165
+      - _target_: src.model.lipreading.preprocess.ToFloat32
 inference:
   get_spectrogram:
     _target_: torchaudio.transforms.Spectrogram
     n_fft: 512
     hop_length: 128
     power: null
+  video:
+    _target_: src.model.lipreading.preprocess.Compose
+    preprocess:
+      - _target_: src.model.lipreading.preprocess.Normalize
+        mean : 0.0
+        std: 255.0
+      - _target_: src.model.lipreading.preprocess.CenterCrop
+        size : [88, 88]
+      - _target_: src.model.lipreading.preprocess.Normalize
+        mean : 0.421
+        std: 0.165
+      - _target_: src.model.lipreading.preprocess.ToFloat32
