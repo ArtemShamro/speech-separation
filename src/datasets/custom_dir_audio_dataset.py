@@ -12,7 +12,7 @@ from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirAudioDataset(BaseDataset):
-    def __init__(self, data_path, video_dir=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
+    def __init__(self, data_path, video_path=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
         self.dataset_name = dataset_name
         data_path = Path(data_path)
 
@@ -25,7 +25,7 @@ class CustomDirAudioDataset(BaseDataset):
 
         self._mix_dir = self._data_dir / "mix"
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
-        self._video_dir = video_dir
+        self._video_path = Path(video_path)
 
         assert self._mix_dir.exists(), f"Audio directory not found: {self._mix_dir}"
 
@@ -58,10 +58,10 @@ class CustomDirAudioDataset(BaseDataset):
                 print(f"Warning: failed to load {audio_file}: {e}")
                 continue
 
-            if self._video_dir.exists():
+            if self._video_path.exists():
                 mouth1, mouth2 = str(audio_file.stem).split("_")
-                mouth1_path = self._video_dir / Path(f"{mouth1}.npz")
-                mouth2_path =  self._video_dir / Path(f"{mouth2}.npz")
+                mouth1_path = self._video_path / Path(f"{mouth1}.npz")
+                mouth2_path =  self._video_path / Path(f"{mouth2}.npz")
                 mouth1_path = str(mouth1_path.absolute().resolve())
                 mouth2_path = str(mouth2_path.absolute().resolve())
             else:
@@ -69,8 +69,8 @@ class CustomDirAudioDataset(BaseDataset):
 
             index_element = {
                 "mix_path": str(audio_file.absolute().resolve()),
-                "audio_len": audio_len, 
-                "mouth1_path": mouth1_path, 
+                "audio_len": audio_len,
+                "mouth1_path": mouth1_path,
                 "mouth2_path": mouth2_path
             }
 
