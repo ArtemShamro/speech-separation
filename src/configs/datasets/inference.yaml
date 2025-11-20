@@ -1,7 +1,7 @@
 test:
-  _target_: src.datasets.CustomDirAudioDataset
+  _target_: src.datasets.CustomDirDataset
   dataset_name : custom_dataset_test
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
   data_path: "dla_dataset/audio/test"
-  video_path: "data/dla_dataset/mouths"
+  mouth_path: "data/dla_dataset/mouths"
