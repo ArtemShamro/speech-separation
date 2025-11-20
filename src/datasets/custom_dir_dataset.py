@@ -13,11 +13,11 @@ class CustomDirDataset(CustomDirAudioDataset):
         if part is not None:
             audio_dir = audio_dir / part
 
-        video_dir = data_path / "mouths"
+        mouth_dir = data_path / "mouths"
 
         super().__init__(
             data_path=audio_dir,
-            video_dir=video_dir,
+            mouth_dir=mouth_dir,
             reindex=reindex,
             dataset_name=dataset_name,
             *args,

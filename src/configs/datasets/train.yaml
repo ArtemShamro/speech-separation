@@ -4,7 +4,7 @@ train:
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
   data_path: "data/dla_dataset/audio/train"
-  video_path: "data/dla_dataset/mouths"
+  mouth_path: "data/dla_dataset/mouths"
 
 val:
   _target_: src.datasets.CustomDirAudioDataset
@@ -12,4 +12,4 @@ val:
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
   data_path: "data/dla_dataset/audio/val"
-  video_path: "data/dla_dataset/mouths"
+  mouth_path: "data/dla_dataset/mouths"
