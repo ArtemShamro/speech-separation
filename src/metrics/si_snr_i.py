@@ -8,9 +8,9 @@ class SiSnrI(BaseMetric):
     between the separated signal and the input mixture.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
-        self.si_snr = SiSnr()
+        self.si_snr = SiSnr(*args, **kwargs)
 
     def __call__(self, pred_audio_batch, true_audio_batch, mix_audio_batch):
         """

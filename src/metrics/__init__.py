@@ -1,2 +1,4 @@
-from .si_snr_i_PIT_inference import SiSnrIPITWrapperInference
-from .si_snr_i_PIT_wrapper import SiSnrIPITWrapper
+from .si_snr_PIT import SiSnrPITTraining, SiSnrPITInference
+from .si_snr_i_PIT import SiSnrIPITTraining, SiSnrIPITInference
+from .pesq_PIT import PesqPITTraining, PesqPITInference
+from .stoi_PIT import StoiPITTraining, StoiPITInference

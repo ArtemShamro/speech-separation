@@ -1,4 +1,13 @@
 train: []
-inference: 
-  - _target_: src.metrics.SiSnrIPITWrapper
+inference:
+  - _target_: src.metrics.SiSnrPITTraining
+    name: "SI-SNR"
+
+  - _target_: src.metrics.SiSnrIPITTraining
     name: "SI-SNRi"
+
+  - _target_: src.metrics.PesqPITTraining
+    name: "PESQ"
+
+  - _target_: src.metrics.StoiPITTraining
+    name: "STOI"
