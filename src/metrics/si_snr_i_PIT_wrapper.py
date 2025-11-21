@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+
 from src.metrics.base_metric import BaseMetric
 from src.metrics.si_snr_i import SiSnrI
 

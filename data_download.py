@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
-import typer
-import requests
 import zipfile
-import requests
-from tqdm import tqdm
-
 from pathlib import Path
+
+import requests
+import typer
+from tqdm import tqdm
 
 app = typer.Typer(help="Download and extract datasets from Yandex Disk.")
 
@@ -27,7 +26,9 @@ def get_direct_download_link(public_link: str) -> str:
     response.raise_for_status()
     href = response.json().get("href")
     if not href:
-        typer.echo("❌ Failed to get direct download link. Check that the link is public.")
+        typer.echo(
+            "❌ Failed to get direct download link. Check that the link is public."
+        )
         raise typer.Exit(code=1)
     return href
 
@@ -36,16 +37,20 @@ def download_file(url: str, dest_path: str):
     """Скачать файл с прогресс-баром и корректными заголовками"""
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                      "AppleWebKit/537.36 (KHTML, like Gecko) "
-                      "Chrome/129.0 Safari/537.36"
+        "AppleWebKit/537.36 (KHTML, like Gecko) "
+        "Chrome/129.0 Safari/537.36"
     }
     with requests.get(url, headers=headers, stream=True) as r:
         if r.status_code == 403:
-            raise RuntimeError("403 Forbidden — файл недоступен. "
-                               "Проверь, что ссылка публичная.")
+            raise RuntimeError(
+                "403 Forbidden — файл недоступен. " "Проверь, что ссылка публичная."
+            )
         r.raise_for_status()
         total = int(r.headers.get("content-length", 0))
-        with open(dest_path, "wb") as f, tqdm(total=total, unit="B", unit_scale=True, desc=dest_path.name) as bar:
+        with (
+            open(dest_path, "wb") as f,
+            tqdm(total=total, unit="B", unit_scale=True, desc=dest_path.name) as bar,
+        ):
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
                 bar.update(len(chunk))
@@ -53,11 +58,13 @@ def download_file(url: str, dest_path: str):
 
 @app.command()
 def download(
-    link: str = typer.Argument(...,
-                               help="Public Yandex.Disk link (e.g. https://disk.yandex.ru/d/XXXX)"),
+    link: str = typer.Argument(
+        ..., help="Public Yandex.Disk link (e.g. https://disk.yandex.ru/d/XXXX)"
+    ),
     dest: Path = typer.Argument(..., help="Destination directory for the dataset"),
     keep_archive: bool = typer.Option(
-        False, "--keep-archive", help="Keep archive after extraction"),
+        False, "--keep-archive", help="Keep archive after extraction"
+    ),
 ):
     """Download and extract dataset from Yandex.Disk"""
     dest.mkdir(parents=True, exist_ok=True)

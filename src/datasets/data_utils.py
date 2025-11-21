@@ -1,15 +1,11 @@
+import os
 from itertools import repeat
 
+import accelerate
 from hydra.utils import instantiate
 
 from src.datasets.collate import collate_fn
 from src.utils.init_utils import set_worker_seed
-
-import os
-
-from omegaconf import OmegaConf
-from copy import deepcopy
-import accelerate
 
 
 def inf_loop(dataloader):

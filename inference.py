@@ -1,16 +1,15 @@
+import logging
 import warnings
 
 import hydra
 import torch
 from hydra.utils import instantiate
 
-from src.logger import ModelLoader
 from src.datasets.data_utils import get_dataloaders
+from src.logger import ModelLoader
 from src.trainer import Inferencer
 from src.utils.init_utils import set_random_seed
 from src.utils.io_utils import ROOT_PATH
-
-import logging
 
 warnings.filterwarnings("ignore", category=UserWarning)
 
@@ -53,9 +52,7 @@ def main(config):
     metrics = {"inference": []}
     for metric_config in config.metrics.get("inference", []):
         # use text_encoder in metrics
-        metrics["inference"].append(
-            instantiate(metric_config)
-        )
+        metrics["inference"].append(instantiate(metric_config))
 
     inferencer = Inferencer(
         model=model,

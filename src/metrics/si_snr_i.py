@@ -1,5 +1,3 @@
-import torch
-from torch import nn
 from src.metrics.base_metric import BaseMetric
 from src.metrics.si_snr import SiSnr
 
@@ -26,6 +24,7 @@ class SiSnrI(BaseMetric):
         Returns:
             Tensor: SI-SNR improvement values per sample, shape [B].
         """
-        metric = self.si_snr(pred_audio_batch, true_audio_batch) - \
-            self.si_snr(mix_audio_batch, true_audio_batch)
+        metric = self.si_snr(pred_audio_batch, true_audio_batch) - self.si_snr(
+            mix_audio_batch, true_audio_batch
+        )
         return metric

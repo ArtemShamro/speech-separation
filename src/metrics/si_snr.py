@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+
 from src.metrics.base_metric import BaseMetric
 
 
@@ -23,8 +23,10 @@ class SiSnr(BaseMetric):
         Returns:
             Tensor: SI-SNR values for each sample in the batch, shape [B].
         """
-        s_target = ((pred_audio_batch * true_audio_batch).sum(dim=1, keepdim=True)
-                    / (true_audio_batch.pow(2).sum(dim=1, keepdim=True) + self.eps)) * true_audio_batch
+        s_target = (
+            (pred_audio_batch * true_audio_batch).sum(dim=1, keepdim=True)
+            / (true_audio_batch.pow(2).sum(dim=1, keepdim=True) + self.eps)
+        ) * true_audio_batch
 
         e_noise = pred_audio_batch - s_target
 
