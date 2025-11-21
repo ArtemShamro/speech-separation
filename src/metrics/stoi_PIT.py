@@ -1,4 +1,8 @@
-from src.metrics.base_metric import BaseMetric, PIT_wrapper_training, PIT_wrapper_inference
+from src.metrics.base_metric import (
+    BaseMetric,
+    PIT_wrapper_inference,
+    PIT_wrapper_training,
+)
 from src.metrics.stoi import StoiMetric
 
 
@@ -8,7 +12,9 @@ class StoiPITTraining(BaseMetric):
         self.stoi = StoiMetric(*args, **kwargs)
 
     def __call__(self, audio, preds, sources, batch_permuts, **batch):
-        return PIT_wrapper_training(self.stoi, audio, preds, sources, batch_permuts, **batch)
+        return PIT_wrapper_training(
+            self.stoi, audio, preds, sources, batch_permuts, **batch
+        )
 
 
 class StoiPITInference(BaseMetric):
@@ -18,4 +24,3 @@ class StoiPITInference(BaseMetric):
 
     def __call__(self, audio, preds, sources, **batch):
         return PIT_wrapper_inference(self.stoi, audio, preds, sources, **batch)
-

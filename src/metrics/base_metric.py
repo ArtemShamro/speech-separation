@@ -1,5 +1,6 @@
 from abc import abstractmethod
 from itertools import permutations
+
 import torch
 
 
@@ -37,7 +38,7 @@ def PIT_wrapper_training(metric_fn, audio, preds, sources, batch_permuts, **batc
         source_choice = stacked_sources[batch_permuts[:, idx], torch.arange(B), ...]
         source_score = metric_fn(pred_audio, source_choice, audio)
         batch_scores += source_score
-        
+
     return (batch_scores / n_sources).detach().cpu().mean()
 
 
