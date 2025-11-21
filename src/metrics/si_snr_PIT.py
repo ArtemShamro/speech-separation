@@ -1,4 +1,8 @@
-from src.metrics.base_metric import BaseMetric, PIT_wrapper_training, PIT_wrapper_inference
+from src.metrics.base_metric import (
+    BaseMetric,
+    PIT_wrapper_inference,
+    PIT_wrapper_training,
+)
 from src.metrics.si_snr import SiSnr
 
 
@@ -8,7 +12,9 @@ class SiSnrPITTraining(BaseMetric):
         self.si_snr = SiSnr()
 
     def __call__(self, audio, preds, sources, batch_permuts, **batch):
-        return PIT_wrapper_training(self.si_snr, audio, preds, sources, batch_permuts, **batch)
+        return PIT_wrapper_training(
+            self.si_snr, audio, preds, sources, batch_permuts, **batch
+        )
 
 
 class SiSnrPITInference(BaseMetric):

@@ -1,4 +1,8 @@
-from src.metrics.base_metric import BaseMetric, PIT_wrapper_training, PIT_wrapper_inference
+from src.metrics.base_metric import (
+    BaseMetric,
+    PIT_wrapper_inference,
+    PIT_wrapper_training,
+)
 from src.metrics.si_snr_i import SiSnrI
 
 
@@ -31,7 +35,9 @@ class SiSnrIPITTraining(BaseMetric):
         Returns:
             Tensor: Scalar tensor with the mean SI-SNRi value over the batch.
         """
-        return PIT_wrapper_training(self.si_snr_i, audio, preds, sources, batch_permuts, **batch)
+        return PIT_wrapper_training(
+            self.si_snr_i, audio, preds, sources, batch_permuts, **batch
+        )
 
 
 class SiSnrIPITInference(BaseMetric):
