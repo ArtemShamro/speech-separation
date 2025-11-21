@@ -10,7 +10,15 @@ class DTTNetLoss(nn.Module):
     def __init__(self):
         super().__init__()
 
-    def forward(self, audio_true, spectrogram_true, phase_true, audio_pred, spectrogram_pred, phase_pred):
+    def forward(
+        self,
+        audio_true,
+        spectrogram_true,
+        phase_true,
+        audio_pred,
+        spectrogram_pred,
+        phase_pred,
+    ):
         """
         Compute the loss for audio and spectrogram reconstruction.
 
@@ -25,8 +33,9 @@ class DTTNetLoss(nn.Module):
         Returns:
             Tensor: Per-sample loss tensor of shape [B], combining spectrum and waveform losses.
         """
-        loss_spectrum = (torch.abs(spectrogram_true - spectrogram_pred)
-                         + torch.abs(phase_true - phase_pred))
+        loss_spectrum = torch.abs(spectrogram_true - spectrogram_pred) + torch.abs(
+            phase_true - phase_pred
+        )
 
         loss_wave = torch.abs(audio_true - audio_pred)
 

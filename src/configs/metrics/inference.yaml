@@ -1,4 +1,13 @@
-train: [] # metrics that are calculated during training
-inference: # metrics that are calculated during inference (eval)
-  - _target_: src.metrics.SiSnrIPITWrapperInference
+train: []
+inference:
+  - _target_: src.metrics.SiSnrPITInference
+    name: "SI-SNR"
+
+  - _target_: src.metrics.SiSnrIPITInference
     name: "SI-SNRi"
+
+  - _target_: src.metrics.PesqPITInference
+    name: "PESQ"
+
+  - _target_: src.metrics.StoiPITInference
+    name: "STOI"

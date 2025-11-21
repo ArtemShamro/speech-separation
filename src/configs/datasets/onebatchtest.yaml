@@ -3,7 +3,8 @@ train:
   dataset_name : custom_dataset_val
   limit: 32
   instance_transforms: ${transforms.instance_transforms.train}
-  data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/train"
+  data_path: "data/dla_dataset/audio/train"
+  mouth_path: "data/dla_dataset/mouths"
 # we filter partitions in one batch test to check the pipeline
 # do not filter test dataset, you want to evaluate on the whole dataset
 val:
@@ -11,4 +12,5 @@ val:
   dataset_name : custom_dataset_val
   limit: 32
   instance_transforms: ${transforms.instance_transforms.train}
-  data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/train"
+  data_path: "data/dla_dataset/audio/val"
+  mouth_path: "data/dla_dataset/mouths"

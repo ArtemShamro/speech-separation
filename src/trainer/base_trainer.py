@@ -1,23 +1,18 @@
+import contextlib
+import random
 from abc import abstractmethod
 
 import torch
+from accelerate import Accelerator, utils
 from numpy import inf
 from torch.nn.utils import clip_grad_norm_
 from tqdm.auto import tqdm
 
+from src.datasets.data_utils import inf_loop
 from src.logger import ModelLoader
 from src.logger.utils import align_state_dict_keys
-from src.datasets.data_utils import inf_loop
 from src.metrics.tracker import MetricTracker
 from src.utils.io_utils import ROOT_PATH
-
-from huggingface_hub import hf_hub_download, HfApi, Repository
-from pathlib import Path
-import os
-
-from accelerate import Accelerator, utils
-import contextlib
-import random
 
 
 class BaseTrainer:
@@ -72,7 +67,9 @@ class BaseTrainer:
         """
         self.is_train = True
         self.accelerator: Accelerator | None = accelerator
-        self.is_main_process = self.accelerator is None or self.accelerator.is_main_process
+        self.is_main_process = (
+            self.accelerator is None or self.accelerator.is_main_process
+        )
         self.use_profiler = use_profiler
 
         self.train_log_items = train_log_items
@@ -186,7 +183,9 @@ class BaseTrainer:
             for epoch in range(self.start_epoch, self.epochs + 1):
                 self._last_epoch = epoch
 
-                if hasattr(self, "_base_train_dataloader") and hasattr(self._base_train_dataloader, "scheduled_transforms"):
+                if hasattr(self, "_base_train_dataloader") and hasattr(
+                    self._base_train_dataloader, "scheduled_transforms"
+                ):
                     self._base_train_dataloader.dataset.epoch_set(epoch)
                     if self.epoch_len > len(self.train_dataloader):
                         self.train_dataloader = inf_loop(self.train_dataloader)
@@ -214,7 +213,9 @@ class BaseTrainer:
 
                 if self.accelerator is not None:
                     self.accelerator.wait_for_everyone()
-                    stop_tensor = torch.tensor(int(stop_process), device=self.accelerator.device)
+                    stop_tensor = torch.tensor(
+                        int(stop_process), device=self.accelerator.device
+                    )
                     self.accelerator.wait_for_everyone()
                     utils.broadcast(stop_tensor, from_process=0)
                     stop_process = bool(stop_tensor.item())
@@ -255,14 +256,16 @@ class BaseTrainer:
         if self.use_profiler:
             self.logger.info("Profiler enabled")
             profiler = torch.profiler.profile(
-                activities=[torch.profiler.ProfilerActivity.CPU,
-                            torch.profiler.ProfilerActivity.CUDA],
-                schedule=torch.profiler.schedule(
-                    wait=3, warmup=3, active=1, repeat=1),
+                activities=[
+                    torch.profiler.ProfilerActivity.CPU,
+                    torch.profiler.ProfilerActivity.CUDA,
+                ],
+                schedule=torch.profiler.schedule(wait=3, warmup=3, active=1, repeat=1),
                 on_trace_ready=torch.profiler.tensorboard_trace_handler(
-                    "./profiler_logs"),
+                    "./profiler_logs"
+                ),
                 record_shapes=True,
-                with_stack=True
+                with_stack=True,
             )
             profiler_ctx = profiler
         else:
@@ -270,10 +273,14 @@ class BaseTrainer:
 
         with profiler_ctx as prof:
             for batch_idx, batch in enumerate(
-                tqdm(self.train_dataloader, desc="train",
-                     total=self.epoch_len, disable=(not self.is_main_process))
+                tqdm(
+                    self.train_dataloader,
+                    desc="train",
+                    total=self.epoch_len,
+                    disable=(not self.is_main_process),
+                )
             ):
-                batch['epoch'] = epoch
+                batch["epoch"] = epoch
                 try:
                     batch = self.process_batch(
                         batch,
@@ -363,7 +370,7 @@ class BaseTrainer:
                 enumerate(dataloader),
                 desc=part,
                 total=len(dataloader),
-                disable=(not self.is_main_process)
+                disable=(not self.is_main_process),
             ):
                 batch["epoch"] = epoch
                 batch = self.process_batch(
@@ -486,8 +493,9 @@ class BaseTrainer:
         """
         if self.config["trainer"].get("max_grad_norm", None) is not None:
             if self.accelerator is not None:
-                self.accelerator.clip_grad_norm_(self.model.parameters(),
-                                                 self.config["trainer"]["max_grad_norm"])
+                self.accelerator.clip_grad_norm_(
+                    self.model.parameters(), self.config["trainer"]["max_grad_norm"]
+                )
             else:
                 clip_grad_norm_(
                     self.model.parameters(), self.config["trainer"]["max_grad_norm"]
@@ -578,23 +586,21 @@ class BaseTrainer:
         for i in indices:
             name_prefix = f"train/audio_{batch_idx}_idx{i}"
             self.writer.add_audio(
-                f"{name_prefix}_aug",
-                audio_list[i].squeeze(0),
-                sample_rate
+                f"{name_prefix}_aug", audio_list[i].squeeze(0), sample_rate
             )
 
             if "audio_original" in batch:
                 self.writer.add_audio(
                     f"{name_prefix}_orig",
                     batch["audio_original"][i].squeeze(0),
-                    sample_rate
+                    sample_rate,
                 )
 
             for source_idx, source in enumerate(sources_list):
                 self.writer.add_audio(
                     f"{name_prefix}_source_{source_idx}",
                     source[i].squeeze(0),
-                    sample_rate
+                    sample_rate,
                 )
 
     def _save_checkpoint(self, epoch, save_best=False, only_best=False):
@@ -636,7 +642,9 @@ class BaseTrainer:
                 best_path = str(self.checkpoint_dir / "model_best.pth")
                 torch.save(state, best_path)
                 if self.config.writer.log_checkpoints:
-                    self.writer.add_checkpoint(best_path, str(self.checkpoint_dir.parent))
+                    self.writer.add_checkpoint(
+                        best_path, str(self.checkpoint_dir.parent)
+                    )
                 self.logger.info("Saving current best: model_best.pth ...")
 
     def _resume_checkpoint(self, resume_path):
@@ -646,7 +654,9 @@ class BaseTrainer:
         """
         resume_path = str(resume_path)
         self.logger.info(f"Loading checkpoint: {resume_path} ...")
-        checkpoint = torch.load(resume_path, map_location=self.device, weights_only=False)
+        checkpoint = torch.load(
+            resume_path, map_location=self.device, weights_only=False
+        )
 
         self.start_epoch = checkpoint["epoch"] + 1
         self.mnt_best = checkpoint["monitor_best"]
@@ -664,9 +674,7 @@ class BaseTrainer:
         else:
             model_to_load = self.model
 
-        state_dict = align_state_dict_keys(
-            checkpoint["state_dict"]
-        )
+        state_dict = align_state_dict_keys(checkpoint["state_dict"])
 
         missing, unexpected = model_to_load.load_state_dict(state_dict, strict=False)
         if missing:
@@ -740,7 +748,7 @@ class BaseTrainer:
             repo_and_branch=self.config.trainer.get("hugging_face_repo"),
             checkpoint_dir=self.checkpoint_dir,
             writer_id=writer_id,
-            logger=self.logger
+            logger=self.logger,
         )
         if hf_info is not None:
             repo_id, branch, commit_id = hf_info

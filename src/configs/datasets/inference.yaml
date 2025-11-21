@@ -1,6 +1,7 @@
 test:
-  _target_: src.datasets.CustomDirAudioDataset
-  dataset_name : custom_dataset_val
+  _target_: src.datasets.CustomDirDataset
+  dataset_name : custom_dataset_test
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
-  data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/val"
+  data_path: "dla_dataset/audio/test"
+  mouth_path: "data/dla_dataset/mouths"

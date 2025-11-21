@@ -22,7 +22,8 @@ class UpSamplingBlock(nn.Module):
 
         self.upsampling = nn.Sequential(
             nn.ConvTranspose2d(
-                out_chanels * 2, out_chanels, 3, stride=2, padding=1, output_padding=1),
+                out_chanels * 2, out_chanels, 3, stride=2, padding=1, output_padding=1
+            ),
             nn.InstanceNorm2d(out_chanels),
             nn.GELU(),
         )

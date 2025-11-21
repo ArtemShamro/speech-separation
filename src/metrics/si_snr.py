@@ -1,5 +1,5 @@
 import torch
-from torch import nn
+
 from src.metrics.base_metric import BaseMetric
 
 
@@ -8,11 +8,11 @@ class SiSnr(BaseMetric):
     Compute the Scale-Invariant Signal-to-Noise Ratio (SI-SNR) metric.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
         self.eps = 1e-5
 
-    def __call__(self, pred_audio_batch, true_audio_batch):
+    def __call__(self, pred_audio_batch, true_audio_batch, mix_audio_batch=None):
         """
         Compute the SI-SNR between predicted and reference audio signals.
 
@@ -23,8 +23,10 @@ class SiSnr(BaseMetric):
         Returns:
             Tensor: SI-SNR values for each sample in the batch, shape [B].
         """
-        s_target = ((pred_audio_batch * true_audio_batch).sum(dim=1, keepdim=True)
-                    / (true_audio_batch.pow(2).sum(dim=1, keepdim=True) + self.eps)) * true_audio_batch
+        s_target = (
+            (pred_audio_batch * true_audio_batch).sum(dim=1, keepdim=True)
+            / (true_audio_batch.pow(2).sum(dim=1, keepdim=True) + self.eps)
+        ) * true_audio_batch
 
         e_noise = pred_audio_batch - s_target
 
