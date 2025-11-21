@@ -1,10 +1,8 @@
 from datetime import datetime
-
-import numpy as np
-import pandas as pd
-
-from comet_ml.api import API
 from pathlib import Path
+
+import pandas as pd
+from comet_ml.api import API
 
 
 class CometMLWriter:
@@ -301,7 +299,6 @@ class CometMLWriter:
         project_name = config.writer.get("project_name")
         model_name = "best_model_checkpoint"
 
-        from comet_ml.api import API
         api = API()
 
         output_dir = Path(output_dir)

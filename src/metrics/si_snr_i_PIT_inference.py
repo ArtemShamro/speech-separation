@@ -1,6 +1,7 @@
-import torch
-from torch import nn
 from itertools import permutations
+
+import torch
+
 from src.metrics.base_metric import BaseMetric
 from src.metrics.si_snr_i import SiSnrI
 

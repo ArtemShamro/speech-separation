@@ -1,8 +1,3 @@
-import comet_ml
-from pathlib import Path
-
-import pandas as pd
-
 import random
 
 from src.logger.utils import plot_spectrogram
@@ -140,7 +135,7 @@ class Trainer(BaseTrainer):
                 metadata={
                     "context": f"val_{elem_idx}",
                 },
-                sample_rate=sample_rate
+                sample_rate=sample_rate,
             )
             for source_idx in range(n_sources):
                 name_prefix = f"val/audio_idx:{elem_idx}_s:{source_idx}_pred"
@@ -151,16 +146,18 @@ class Trainer(BaseTrainer):
                     metadata={
                         "context": f"val_{elem_idx}",
                     },
-                    sample_rate=sample_rate
+                    sample_rate=sample_rate,
                 )
 
                 name_prefix = f"val/audio_idx:{elem_idx}_s:{source_idx}_orig"
-                original_source = sources[batch_permuts[elem_idx, source_idx]]["audio"][elem_idx]
+                original_source = sources[batch_permuts[elem_idx, source_idx]]["audio"][
+                    elem_idx
+                ]
                 self.writer.add_audio(
                     f"{name_prefix}",
                     original_source.squeeze(0),
                     metadata={
                         "context": f"val_{elem_idx}",
                     },
-                    sample_rate=sample_rate
+                    sample_rate=sample_rate,
                 )

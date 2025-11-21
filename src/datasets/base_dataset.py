@@ -1,14 +1,12 @@
 import logging
 import random
-
-import torch
+from pathlib import Path
+from typing import List
 
 import numpy as np
 import torchaudio
 from torch.utils.data import Dataset
 
-from typing import List
-from pathlib import Path
 logger = logging.getLogger(__name__)
 
 
@@ -20,6 +18,7 @@ class BaseDataset(Dataset):
     for the same task in the identical manner. Therefore, to work with
     several datasets, the user only have to define index in a nested class.
     """
+
     _sources: List[Path] = []
 
     def __init__(
@@ -102,7 +101,7 @@ class BaseDataset(Dataset):
             source_audio = self.load_audio(source_path)
             source_audio = self.preprocess_audio(source_audio, consistent_only=True)
             source_magnitude, source_phase = self.get_spectrogram(source_audio)
- 
+
             source_data = {
                 "audio": source_audio,
                 "spectrogram": source_magnitude,
@@ -111,7 +110,12 @@ class BaseDataset(Dataset):
 
             sources.append(source_data)
 
-        if data_dict.get("mouth1_path") is None or data_dict.get("mouth2_path") is None or data_dict["mouth1_path"] is None or data_dict["mouth2_path"] is None:
+        if (
+            data_dict.get("mouth1_path") is None
+            or data_dict.get("mouth2_path") is None
+            or data_dict["mouth1_path"] is None
+            or data_dict["mouth2_path"] is None
+        ):
             mouth1 = mouth2 = None
         else:
             mouth1 = np.load(data_dict["mouth1_path"])["data"]
@@ -125,7 +129,7 @@ class BaseDataset(Dataset):
             "sources": sources,
             "audio_path": mix_path,
             "mouth1": mouth1,
-            "mouth2": mouth2
+            "mouth2": mouth2,
         }
 
         instance_data = self.preprocess_data(instance_data)
@@ -192,7 +196,11 @@ class BaseDataset(Dataset):
         """
         if self.instance_transforms is not None:
             for transform_name in self.instance_transforms.keys():
-                if transform_name == "get_spectrogram" or transform_name == "audio" or transform_name == "audio_consistent":
+                if (
+                    transform_name == "get_spectrogram"
+                    or transform_name == "audio"
+                    or transform_name == "audio_consistent"
+                ):
                     continue  # skip special key
                 instance_data[transform_name] = self.instance_transforms[
                     transform_name
@@ -275,7 +283,8 @@ class BaseDataset(Dataset):
             if "mix_path" not in entry:
                 print(entry)
             assert "mix_path" in entry, (
-                "Each dataset item should include field 'mix_path'" " - path to audio file."
+                "Each dataset item should include field 'mix_path'"
+                " - path to audio file."
             )
             assert "audio_len" in entry, (
                 "Each dataset item should include field 'audio_len'"

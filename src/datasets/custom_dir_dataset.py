@@ -1,10 +1,19 @@
 from pathlib import Path
-from src.utils.io_utils import ROOT_PATH
+
 from src.datasets.custom_dir_audio_dataset import CustomDirAudioDataset
+from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirDataset(CustomDirAudioDataset):
-    def __init__(self, data_path=None, part=None, reindex=False, dataset_name: str = "custom_dataset", *args, **kwargs):
+    def __init__(
+        self,
+        data_path=None,
+        part=None,
+        reindex=False,
+        dataset_name: str = "custom_dataset",
+        *args,
+        **kwargs,
+    ):
         if data_path is None:
             data_path = ROOT_PATH / "data" / "datasets" / "dla_dataset"
         data_path = Path(data_path)
@@ -21,5 +30,5 @@ class CustomDirDataset(CustomDirAudioDataset):
             reindex=reindex,
             dataset_name=dataset_name,
             *args,
-            **kwargs
+            **kwargs,
         )

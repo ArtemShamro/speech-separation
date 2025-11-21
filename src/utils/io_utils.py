@@ -1,7 +1,8 @@
-import torch
 import json
 from collections import OrderedDict
 from pathlib import Path
+
+import torch
 
 ROOT_PATH = Path(__file__).absolute().resolve().parent.parent.parent
 

@@ -70,9 +70,9 @@ class BaselineModel(nn.Module):
         self.n_fft = n_fft
         self.hop_length = hop_length
 
-        self.source_nets = nn.ModuleList([
-            BaselineModelBlock(n_feats, fc_hidden) for _ in range(sources)
-        ])
+        self.source_nets = nn.ModuleList(
+            [BaselineModelBlock(n_feats, fc_hidden) for _ in range(sources)]
+        )
 
     def forward(self, spectrogram, phase, audio_length, **batch):
         """
@@ -91,19 +91,25 @@ class BaselineModel(nn.Module):
         out = []
         for source_network in self.source_nets:
             mask_spec, mask_phase = source_network(
-                spectrogram.transpose(-1, -2), phase.transpose(-1, -2))
-            mask_spec, mask_phase = mask_spec.transpose(-1, -2), mask_phase.transpose(-1, -2)
+                spectrogram.transpose(-1, -2), phase.transpose(-1, -2)
+            )
+            mask_spec, mask_phase = mask_spec.transpose(-1, -2), mask_phase.transpose(
+                -1, -2
+            )
 
             source_spec, source_phase = self.recon_signal_spectral(
-                spectrogram, phase, mask_spec, mask_phase)
+                spectrogram, phase, mask_spec, mask_phase
+            )
 
             source_audio = self.recon_audio(source_spec, source_phase, audio_length)
 
-            out.append({
-                "audio": source_audio,
-                "spectrogram": source_spec,
-                "phase": source_phase,
-            })
+            out.append(
+                {
+                    "audio": source_audio,
+                    "spectrogram": source_spec,
+                    "phase": source_phase,
+                }
+            )
 
         return {"preds": out}
 
@@ -142,7 +148,7 @@ class BaselineModel(nn.Module):
             complex_spec,
             n_fft=self.n_fft,
             hop_length=self.hop_length,
-            length=audio_length
+            length=audio_length,
         )
 
         return source_audio
