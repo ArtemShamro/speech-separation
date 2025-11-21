@@ -1,8 +1,7 @@
-import random
-
 import torch
+import torchaudio.functional as F
 from torchaudio.transforms import Speed
-
+import random
 from .base_aug import BaseAugmentation
 
 

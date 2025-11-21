@@ -1,13 +1,10 @@
 import os
-import urllib.request
 import zipfile
 from pathlib import Path
-
-import torch_audiomentations as ta
 from torch import Tensor
-
+import torch_audiomentations as ta
+import urllib.request
 from src.utils.io_utils import ROOT_PATH
-
 from .base_aug import BaseAugmentation
 
 
@@ -31,9 +28,8 @@ class ApplyImpulseResponse(BaseAugmentation):
         super().__init__()
 
         if data_dir is None:
-            data_dir = Path(
-                ROOT_PATH / "data" / "datasets" / "rirs_noises" / "simulated_rirs"
-            )
+            data_dir = Path(ROOT_PATH / "data" / "datasets"
+                            / "rirs_noises" / "simulated_rirs")
             data_dir.mkdir(exist_ok=True, parents=True)
         self._data_dir = Path(data_dir)
 

@@ -1,7 +1,6 @@
-from typing import List
-
+import torch
 from torchvision.transforms.v2 import Compose
-
+from typing import List
 from .base_aug import BaseAugmentation
 
 
@@ -10,7 +9,6 @@ class ConsistentCompose(Compose):
     Compose multiple augmentations and apply them consistently
     across related audio signals (e.g., mixture and sources).
     """
-
     transforms: List[BaseAugmentation]
 
     def __init__(self, transforms: List[BaseAugmentation]):

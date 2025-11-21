@@ -1,7 +1,7 @@
-from itertools import permutations
-
 import torch
 from torch import nn
+from itertools import permutations
+from hydra.utils import instantiate
 
 
 class PITLossWrapper(nn.Module):
@@ -63,9 +63,7 @@ class PITLossWrapper(nn.Module):
         loss_values, batch_perm_idx = torch.min(batch_losses, dim=0)
 
         batch_permuts = [permuts_sources[idx] for idx in batch_perm_idx]
-        batch_permuts = torch.tensor(
-            batch_permuts, device=audio.device, dtype=torch.long
-        )
+        batch_permuts = torch.tensor(batch_permuts, device=audio.device, dtype=torch.long)
 
         return {
             "loss": loss_values.mean(),

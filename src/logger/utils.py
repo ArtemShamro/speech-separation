@@ -1,9 +1,8 @@
 import io
-
 import matplotlib.pyplot as plt
-import numpy as np
 import PIL
 from torchvision.transforms import ToTensor
+import numpy as np
 
 plt.switch_backend("agg")  # fix RuntimeError: main thread is not in main loop
 
@@ -81,11 +80,7 @@ def align_state_dict_keys(state_dict):
     """
     new_state = {}
     for k, v in state_dict.items():
-        k = (
-            k.replace("module.", "")
-            .replace("model.", "")
-            .replace("compile.", "")
-            .replace("_orig_mod.", "")
-        )
+        k = k.replace("module.", "").replace("model.", "").replace(
+            "compile.", "").replace("_orig_mod.", "")
         new_state[k] = v
     return new_state

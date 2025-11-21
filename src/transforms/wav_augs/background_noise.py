@@ -1,13 +1,10 @@
 import os
-import urllib.request
 import zipfile
 from pathlib import Path
-
+from torch import nn, Tensor
 import torch_audiomentations as ta
-from torch import Tensor
-
+import urllib.request
 from src.utils.io_utils import ROOT_PATH
-
 from .base_aug import BaseAugmentation
 
 
@@ -60,10 +57,7 @@ class AddBackgroundNoise(BaseAugmentation):
             print("[AddBackgroundNoise] No local MUSAN found, downloading...")
             musan_root = self._download_and_extract()
 
-        noise_paths = [
-            os.path.join(musan_root, "noise"),
-            os.path.join(musan_root, "music"),
-        ]
+        noise_paths = [os.path.join(musan_root, "noise"), os.path.join(musan_root, "music")]
         if include_babble:
             noise_paths.append(os.path.join(musan_root, "speech"))
         noise_paths = [p for p in noise_paths if os.path.exists(p)]
@@ -91,9 +85,7 @@ class AddBackgroundNoise(BaseAugmentation):
             return None
         for sub in ["noise", "music", "speech"]:
             sub_path = base_dir / sub
-            if sub_path.exists() and any(
-                str(f).endswith(".wav") for f in sub_path.rglob("*.wav")
-            ):
+            if sub_path.exists() and any(str(f).endswith(".wav") for f in sub_path.rglob("*.wav")):
                 return str(base_dir)
         return None
 
@@ -118,9 +110,7 @@ class AddBackgroundNoise(BaseAugmentation):
                 print(f"[AddBackgroundNoise] Found MUSAN in: {candidate}")
                 return str(candidate)
 
-        raise RuntimeError(
-            "MUSAN: no valid structure (noise/music/speech) found after extraction!"
-        )
+        raise RuntimeError("MUSAN: no valid structure (noise/music/speech) found after extraction!")
 
     def __call__(self, data: Tensor):
         """

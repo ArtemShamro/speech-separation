@@ -1,8 +1,7 @@
-import random
-
 import torch
 import torch.nn as nn
 import torchlibrosa.augmentation as A
+import random
 
 
 class SpecAugmentation(nn.Module):

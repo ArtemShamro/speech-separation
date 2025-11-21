@@ -1,8 +1,8 @@
-from pathlib import Path
-
 import torch
-import torchaudio
 from tqdm.auto import tqdm
+
+import torchaudio
+from pathlib import Path
 
 from src.metrics.tracker import MetricTracker
 from src.trainer.base_trainer import BaseTrainer
@@ -177,9 +177,7 @@ class Inferencer(BaseTrainer):
                 if audio_tensor.dim() == 1:
                     audio_tensor = audio_tensor.unsqueeze(0)
 
-                save_path = (
-                    self.save_path / part / f"source_{pred_idx}" / f"{file_stem}.wav"
-                )
+                save_path = self.save_path / part / f"source_{pred_idx}" / f"{file_stem}.wav"
                 torchaudio.save(save_path, audio_tensor, self.sample_rate)
 
         return batch
