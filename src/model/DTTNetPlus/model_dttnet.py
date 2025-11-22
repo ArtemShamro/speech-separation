@@ -45,8 +45,6 @@ class DTTNetPlusModel(nn.Module):
         )
 
     def forward(self, spectrogram, phase, audio_length, video, **batch):
-        print("devces : ", spectrogram.device, phase.device, video.device)
-        
         x, skip_results = self.encoder(spectrogram, phase)
 
         video_encoded = self.video_encoder(video)

@@ -38,6 +38,7 @@ class DTTNetLossWrapper(nn.Module):
                 - loss (Tensor): Mean permutation invariant loss over the batch.
                 - batch_permuts (Tensor): Tensor of shape [B, n_sources] with optimal source permutations.
         """
+        B = audio.shape[0]
         n_sources = len(sources)
 
         loss_values = torch.zeros(audio.shape[0], device=audio.device)
@@ -53,7 +54,9 @@ class DTTNetLossWrapper(nn.Module):
             )
             loss_values += batch_loss
 
+        batch_permuts = torch.arange(n_sources, device=audio.device).unsqueeze(0).repeat(B, 1)
+
         return {
             "loss": loss_values.mean(),
-            "batch_permuts": torch.arange(n_sources, device=audio.device, dtype=torch.long),
+            "batch_permuts": batch_permuts,
         }

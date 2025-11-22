@@ -64,7 +64,7 @@ def main(config):
 
     # build model architecture, then print to console
     model = instantiate(config.model).to(device)
-    logger.info(model)
+    # logger.info(model)
 
     # get function handles of loss and metrics
     loss_function = instantiate(
@@ -74,26 +74,21 @@ def main(config):
 
     # freeze / unfreeze parameters
     # model = set_learnable_parameters(config.model, model)
-    print("WE ARE HERE 1")
     # build optimizer, learning rate scheduler
     param_groups = get_param_groups(config, model)
-    print("WE ARE HERE 2")
 
     optimizer = instantiate(config.optimizer, params=param_groups, _convert_="object")
     lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer, _convert_="object")
-    print("WE ARE HERE 3")
 
     if not resume_from_checkpoit is None:
         model = model_loader.load(model, save_dir)
 
     model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
-    print("WE ARE HERE 4")
 
 
     epoch_len = config.trainer.get("epoch_len")
     if epoch_len is not None:
         epoch_len = epoch_len // accelerator.num_processes
-    print("WE ARE HERE 5")
 
     trainer = Trainer(
         model=model,
