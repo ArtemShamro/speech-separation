@@ -120,7 +120,6 @@ class CenterCrop(object):
         Returns:
             numpy.ndarray: Cropped image.
         """
-        print(f"CENTER CROP : frames.shape : {frames.shape}")
         t, h, w = frames.shape
         th, tw = self.size
         delta_w = int(round((w - tw)) / 2.)

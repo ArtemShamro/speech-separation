@@ -4,7 +4,7 @@ defaults:
   - metrics: example
   - datasets: baseline
   - dataloader: baseline
-  - transforms: only_instance
+  - transforms: baseline
   - _self_
 model_loader:
   # patterns:

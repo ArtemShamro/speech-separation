@@ -4,7 +4,7 @@ train:
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
   data_path: "/kaggle/input/dla-dataset/dla_dataset/audio/train"
-  video_path: "/kaggle/input/dla-dataset/dla_dataset/mouths"
+  video_dir: "/kaggle/input/dla-dataset/dla_dataset/mouths"
   # mouths_dir
 
 # we filter partitions in one batch test to check the pipeline
@@ -15,4 +15,4 @@ val:
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
   data_path: "/kaggle/input/dla-dataset/dla_dataset/audio/val"
-  video_path: "/kaggle/input/dla-dataset/dla_dataset/mouths"
+  video_dir: "/kaggle/input/dla-dataset/dla_dataset/mouths"

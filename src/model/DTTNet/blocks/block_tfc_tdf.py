@@ -31,21 +31,17 @@ class TFC_TDF_Block(nn.Module):
 
         self.skip_conv = nn.Conv2d(channels, channels, 3, padding="same")
 
-    def forward(self, x: torch.Tensor):
-        x_skip = self.skip_conv(x)
+    def forward(self, x):
         if self.use_checkpoints:
-            x_fc_skip = checkpoint(self.conv1, x)
+            return checkpoint(self.forward_block, x)
         else:
-            x_fc_skip = self.conv1(x)
+            return self.forward_block(x)
 
+    def forward_block(self, x):
+        x_skip = self.skip_conv(x)
+        x_fc_skip = self.conv1(x)
         out = self.fc(x_fc_skip.transpose(-1, -2)).transpose(-1, -2)
         out += x_fc_skip
-
-        if self.use_checkpoints:
-            out = checkpoint(self.conv2, out)
-        else:
-            out = self.conv2(out)
-
+        out = self.conv2(out)
         out += x_skip
-
         return out

@@ -7,7 +7,7 @@ import string
 import subprocess
 
 from accelerate import Accelerator, DataLoaderConfiguration
-from accelerate.utils import broadcast_object_list
+from accelerate.utils import broadcast_object_list, DistributedDataParallelKwargs
 import numpy as np
 import torch
 from omegaconf import OmegaConf
@@ -17,6 +17,47 @@ from pathlib import Path
 
 from src.logger.logger import setup_logging
 from src.utils.io_utils import ROOT_PATH
+
+
+def set_learnable_parameters(model_config, model):
+    freeze_list = model_config.get("freeze_params", None)
+    unfreeze_list = model_config.get("unfreeze_params", None)
+
+    if (freeze_list is None or len(freeze_list) == 0) and \
+       (unfreeze_list is None or len(unfreeze_list) == 0):
+        return model
+
+    def get_module_by_path(model, path: str):
+        module = model
+        for attr in path.split("."):
+            if not hasattr(module, attr):
+                raise ValueError(f"Module path '{path}' not found in model.")
+            module = getattr(module, attr)
+        return module
+
+    def freeze_module(module):
+        for p in module.parameters():
+            p.requires_grad = False
+
+    def unfreeze_module(module):
+        for p in module.parameters():
+            p.requires_grad = True
+
+    if freeze_list is not None:
+        if freeze_list == "all" or freeze_list == ["all"]:
+            for p in model.parameters():
+                p.requires_grad = False
+        else:
+            for path in freeze_list:
+                module = get_module_by_path(model, path)
+                freeze_module(module)
+
+    if unfreeze_list is not None:
+        for path in unfreeze_list:
+            module = get_module_by_path(model, path)
+            unfreeze_module(module)
+
+    return model
 
 
 def get_param_groups(config, model):
@@ -40,8 +81,10 @@ def get_param_groups(config, model):
 
 
 def get_accelerator() -> Accelerator:
+    # kwargs = DistributedDataParallelKwargs(find_unused_parameters=True)
     accelerator = Accelerator(
         dataloader_config=DataLoaderConfiguration(non_blocking=True),
+        # kwargs_handlers=[kwargs],
     )
 
     if accelerator.state.dynamo_plugin is not None:

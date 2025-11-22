@@ -1,4 +1,3 @@
-from src.utils.init_utils import set_random_seed, init_logger_saving_resume, get_accelerator, get_metrics, get_param_groups
 from src.trainer import Trainer
 from src.datasets.data_utils import get_dataloaders
 from src.logger import ModelLoader
@@ -10,6 +9,12 @@ import warnings
 
 from src.logger import DummyWriter
 from dotenv import load_dotenv
+from src.utils.init_utils import (set_random_seed,
+                                  init_logger_saving_resume,
+                                  get_accelerator,
+                                  get_metrics,
+                                  get_param_groups,
+                                  set_learnable_parameters)
 load_dotenv()
 
 
@@ -66,6 +71,9 @@ def main(config):
         config.loss_function).to(device)
 
     metrics = get_metrics(config)
+
+    # freeze / unfreeze parameters
+    model = set_learnable_parameters(config.model, model)
 
     # build optimizer, learning rate scheduler
     param_groups = get_param_groups(config, model)

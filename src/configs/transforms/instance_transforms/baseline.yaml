@@ -8,13 +8,18 @@ train:
   audio_consistent:
     _target_: src.transforms.wav_augs.ConsistentCompose
     transforms:
-      - _target_: src.transforms.wav_augs.SpeedPerturb
-        speeds: [0.9, 1.1]
-        p: 0.5
+      # - _target_: src.transforms.wav_augs.SpeedPerturb
+      #   speeds: [0.9, 1.1]
+      #   p: 0.5
+      - _target_: src.transforms.wav_augs.ApplyImpulseResponse
+        p: 0.2
+        sample_rate: 16000
+        compensate_for_propagation_delay: True
+        data_dir: "/kaggle/input/rirs-noises/RIRS_NOISES/simulated_rirs"
       - _target_: src.transforms.wav_augs.Gain
         min_gain_in_db: -6
         max_gain_in_db: 6
-        p: 0.5
+        p: 0.3
   audio: # audio transforms only for mix
     _target_: torchvision.transforms.v2.Compose
     transforms:
@@ -22,18 +27,13 @@ train:
         min_snr_in_db: 10
         max_snr_in_db: 30
         sample_rate: 16000
-        p: 0.3
-      # - _target_: src.transforms.wav_augs.ApplyImpulseResponse
-      #   p: 0.2
-      #   sample_rate: 16000
-      #   compensate_for_propagation_delay: True
-      #   data_dir: "/kaggle/input/rirs-noises/RIRS_NOISES/simulated_rirs"
-      # - _target_: src.transforms.wav_augs.AddBackgroundNoise
-      #   p: 0.4
-      #   snr_db: [20,30]
-      #   include_babble: true
-      #   sample_rate: 16000
-      #   data_dir: "/kaggle/input/musan-noise/musan"
+        p: 0.2
+      - _target_: src.transforms.wav_augs.AddBackgroundNoise
+        p: 0.2
+        snr_db: [20,30]
+        include_babble: false
+        sample_rate: 16000
+        data_dir: "/kaggle/input/musan-noise/musan"
   video:
     _target_: src.model.lipreading.preprocess.Compose
     preprocess:

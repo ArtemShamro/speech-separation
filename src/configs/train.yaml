@@ -30,7 +30,7 @@ lr_scheduler:
   epochs: ${trainer.n_epochs}
   anneal_strategy: cos
 loss_function:
-  _target_: src.loss.PITLossWrapper
+  _target_: src.loss.DTTNetLossWrapper
   loss_function:
     _target_: src.loss.DTTNetLoss
 trainer:
@@ -56,4 +56,4 @@ trainer:
   seed: 1
   hugging_face_repo: "areshx/source-sep@dttnet_low_freq" # "repo@branch"
   train_log_items: 10 # n_items to log wav and wav_aug each train logtime
-  # max_grad_norm: 1
+  max_grad_norm: 2

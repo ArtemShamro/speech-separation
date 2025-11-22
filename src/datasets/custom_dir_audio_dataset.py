@@ -69,7 +69,7 @@ class CustomDirAudioDataset(BaseDataset):
 
                 if self._video_dir is not None:
                     mouth_file = self._video_dir / \
-                        Path(f"{str(audio_file.stem).split("_")[source_idx]}.npz")
+                        Path(f"{str(audio_file.stem).split('_')[source_idx]}.npz")
                     index_element.update(
                         {f"{source_dir.name}_video_path": str(mouth_file.absolute().resolve())})
 
