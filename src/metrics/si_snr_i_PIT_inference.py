@@ -57,4 +57,4 @@ class SiSnrIPITWrapperInference(BaseMetric):
         best_perm_idx = perm_scores.argmax(dim=0)  # [B]
         best_scores = perm_scores[best_perm_idx, torch.arange(B)]
 
-        return best_scores.mean().cpu()
+        return best_scores.mean().cpu() / n_sources

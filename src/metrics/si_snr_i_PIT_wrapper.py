@@ -34,6 +34,7 @@ class SiSnrIPITWrapper(BaseMetric):
             Tensor: Scalar tensor with the mean SI-SNRi value over the batch.
         """
         B = audio.shape[0]
+        n_sources = len(sources)
         batch_snr_i = torch.zeros(B, device=audio.device)
         stacked_sources = torch.stack([source["audio"] for source in sources])
         for idx, pred in enumerate(preds):
@@ -41,4 +42,4 @@ class SiSnrIPITWrapper(BaseMetric):
             source_choice = stacked_sources[batch_permuts[:, idx], torch.arange(B), ...]
             source_snr_i = self.si_snr_i(pred_audio, source_choice, audio)
             batch_snr_i += source_snr_i
-        return batch_snr_i.detach().cpu().mean()
+        return batch_snr_i.detach().cpu().mean() / n_sources

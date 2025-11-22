@@ -45,6 +45,7 @@ train:
       - _target_: src.model.lipreading.preprocess.Normalize
         mean : 0.421
         std: 0.165
+      - _target_: src.model.lipreading.preprocess.ToFloat32
   spectrogram:
     _target_: torchvision.transforms.v2.Compose
     transforms:
@@ -80,3 +81,4 @@ inference:
       - _target_: src.model.lipreading.preprocess.Normalize
         mean : 0.421
         std: 0.165
+      - _target_: src.model.lipreading.preprocess.ToFloat32
