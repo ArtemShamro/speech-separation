@@ -102,7 +102,7 @@ class BaseDataset(Dataset):
             source_audio = self.load_audio(source_path)
             source_audio = self.preprocess_audio(source_audio, consistent_only=True)
             source_magnitude, source_phase = self.get_spectrogram(source_audio)
- 
+
             source_data = {
                 "audio": source_audio,
                 "spectrogram": source_magnitude,
@@ -114,8 +114,13 @@ class BaseDataset(Dataset):
         if data_dict.get("mouth1_path") is None or data_dict.get("mouth2_path") is None or data_dict["mouth1_path"] is None or data_dict["mouth2_path"] is None:
             mouth1 = mouth2 = None
         else:
-            mouth1 = np.load(data_dict["mouth1_path"])["data"]
-            mouth2 = np.load(data_dict["mouth2_path"])["data"]
+            def get_video(path):
+                from torchvision.transforms import ConvertImageDtype
+                process_video = ConvertImageDtype(torch.float32)
+                return process_video(torch.tensor(np.load(path)["data"]))
+
+            mouth1 = get_video(data_dict["mouth1_path"])
+            mouth2 = get_video(data_dict["mouth2_path"])
 
         instance_data = {
             "audio": mix_audio,

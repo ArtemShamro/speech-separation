@@ -7,7 +7,8 @@ import gdown
 import torch
 import torch.nn as nn
 
-from src.model.DTTNetvV.videopart.resnet import Swish, BasicBlock, ResNet
+from src.model.VideoEncoders.resnet import Swish, BasicBlock, ResNet
+
 
 def threeD_to_2D_tensor(x):
     n_batch, n_channels, s_time, sx, sy = x.shape
@@ -54,7 +55,7 @@ class VideoEncoder(nn.Module):
             print(f"Loading checkpoint from {checkpoint_path}")
             checkpoint = torch.load(checkpoint_path, map_location='cpu')
             state_dict = checkpoint['model_state_dict']
-            self.load_state_dict(state_dict)
+            self.load_state_dict(state_dict, strict=False)
         else:
             raise ValueError("Checkpoint file not found after download attempt!")
 
