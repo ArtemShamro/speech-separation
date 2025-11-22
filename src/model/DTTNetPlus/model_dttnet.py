@@ -8,7 +8,7 @@ from .modules.video_encoder import VideoEncoderModule
 
 
 class DTTNetPlusModel(nn.Module):
-    def __init__(self, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=1024, hop_length=128, n_heads=2, video_embed_dim=256, use_checkpoints=False, video_enc_weights_path=None):
+    def __init__(self, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=1024, hop_length=128, n_heads=2, video_embed_dim=256, use_checkpoints=False, video_enc_weights_path=None, *args, **kwargs):
         super().__init__()
         self.n_sources = n_sources
         self.n_fft = n_fft
@@ -45,10 +45,16 @@ class DTTNetPlusModel(nn.Module):
         )
 
     def forward(self, spectrogram, phase, audio_length, video, **batch):
+        print("devces : ", spectrogram.device, phase.device, video.device)
+        
         x, skip_results = self.encoder(spectrogram, phase)
+
         video_encoded = self.video_encoder(video)
+
         x = self.latent(x, video_encoded)
+
         x = self.decoder(x, skip_results)
+
 
         B, _, F, T = x.shape
         masks = x.view(B, self.n_sources, 2, F, T)

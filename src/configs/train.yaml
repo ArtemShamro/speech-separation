@@ -1,5 +1,5 @@
 defaults:
-  - model: dttnet
+  - model: dttnet_plus
   - writer: cometml
   - metrics: example
   - datasets: train
@@ -35,9 +35,9 @@ loss_function:
     _target_: src.loss.DTTNetLoss
 trainer:
   use_profiler: False
-  log_step: 200
-  n_epochs: 20
-  epoch_len: 800
+  log_step: 100
+  n_epochs: 50
+  epoch_len: 300
   device_tensors: ["spectrogram", "phase", "sources", "audio", "audio_length", "video"] # which tensors should be on device (ex. GPU)
   # patterns:
   # no resume
@@ -54,6 +54,6 @@ trainer:
   early_stop: 100 # epochs for early stopping
   save_dir: "saved"
   seed: 1
-  hugging_face_repo: "areshx/source-sep@dttnet_low_freq" # "repo@branch"
+  hugging_face_repo: "areshx/source-sep@dttnet_plus" # "repo@branch"
   train_log_items: 10 # n_items to log wav and wav_aug each train logtime
   max_grad_norm: 2

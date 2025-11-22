@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from src.model.DTTNet.blocks.block_tfc_tdf import TFC_TDF_Block
-from src.model.DTTNet.blocks.block_sampling import DownSamplingBlock
+from src.model.DTTNetPlus.blocks.block_tfc_tdf import TFC_TDF_Block
+from src.model.DTTNetPlus.blocks.block_sampling import DownSamplingBlock
 
 
 class Encoder(nn.Module):
@@ -42,5 +42,6 @@ class EncoderBlock(nn.Module):
 
     def forward(self, x):
         skip = self.tfc_tdf(x)
+
         out = self.downsampling(skip)
         return out, skip

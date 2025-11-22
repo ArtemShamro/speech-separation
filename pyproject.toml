@@ -27,6 +27,7 @@ dependencies = [
     "tokenizers>=0.22.1",
     "typer>=0.20.0",
     "opencv-python>=4.11.0.86",
+    "kaggle>=1.8.0",
 ]
 
 [tool.uv.sources]
