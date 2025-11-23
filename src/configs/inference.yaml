@@ -3,7 +3,7 @@ defaults:
   - metrics: inference
   - datasets: inference
   - dataloader: baseline
-  - transforms: only_instance
+  - transforms: baseline
   - _self_
 
 model_loader:
