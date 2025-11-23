@@ -6,7 +6,7 @@ n_idp_layers: 4
 n_heads: 2
 video_embed_dim: 512
 use_checkpoints: False
-video_enc_weights_path: "/root/speech-separation/src/model/lipreading/lrw_snv1x_dsmstcn3x.pth" # path to pretraind video_encoder waights
+video_enc_weights_path: null # path to pretraind video_encoder waights
 n_fft: ${transforms.instance_transforms.train.get_spectrogram.n_fft}
 hop_length: ${transforms.instance_transforms.train.get_spectrogram.hop_length}
 freeze_params: null # list of parameters (modules) or 'all' / null
