@@ -18,16 +18,25 @@ class CrossAttentionPositional(nn.Module):
         self.audio_channels = audio_channels
         self.video_channels = video_channels
 
-        self.video_proj = nn.Linear(video_channels, audio_channels)
-        self.cross_q_norm = nn.LayerNorm(audio_channels)
-        self.cross_kv_norm = nn.LayerNorm(audio_channels)
+        self.video_proj = nn.Sequential(
+            nn.Linear(video_channels, audio_channels),
+            nn.GELU(),
+        )
+
+        self.q_audio = nn.Linear(audio_channels, audio_channels)
+        self.k_video = nn.Linear(audio_channels, audio_channels)
+        self.v_video = nn.Linear(audio_channels, audio_channels)
+
+        self.inp_layernorm = nn.LayerNorm(audio_channels)
+        self.attn_layernorm = nn.LayerNorm(audio_channels)
+
         self.cross_attn = nn.MultiheadAttention(
             embed_dim=audio_channels,
             num_heads=n_heads,
             dropout=0.0,
             batch_first=True,
         )
-        self.cross_ffn_norm = nn.LayerNorm(audio_channels)
+
         self.cross_ffn = nn.Sequential(
             nn.Linear(audio_channels, 4 * audio_channels),
             nn.GELU(),
@@ -53,16 +62,19 @@ class CrossAttentionPositional(nn.Module):
         audio_tokens = audio_tokens + pe_audio.unsqueeze(0)
         video_tokens = video_tokens + pe_video.unsqueeze(0)
 
-        q = self.cross_q_norm(audio_tokens)
-        kv = self.cross_kv_norm(video_tokens)
-        attn_out, _ = self.cross_attn(q, kv, kv)
-        audio_tokens = audio_tokens + attn_out
-        audio_tokens = audio_tokens + self.cross_ffn(self.cross_ffn_norm(audio_tokens))
+        q = self.q_audio(self.inp_layernorm(audio_tokens))
+        k = self.k_video(self.inp_layernorm(video_tokens))
+        v = self.v_video(self.inp_layernorm(video_tokens))
+
+        attn_out, _ = self.cross_attn(q, k, v)
+        audio_tokens = self.attn_layernorm(audio_tokens + attn_out)
+
+        audio_tokens = audio_tokens + self.cross_ffn(audio_tokens)
 
         gate = self.audio_gate(audio_tokens)
         audio_tokens = audio_tokens * gate
 
         audio_enh = audio_tokens.transpose(1, 2).unsqueeze(2).expand(B, C_a, F_a, T_a)
-
         fused = torch.cat([audio_features, audio_enh], dim=1)
+
         return fused
