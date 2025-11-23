@@ -4,3 +4,4 @@ test:
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
   data_path: "/home/atem/HSE_videos/4_DLA/hw_2_SeppechSep/dla_dataset/audio/val"
+  video_dir: "/root/dataset/dla_dataset/mouths"
