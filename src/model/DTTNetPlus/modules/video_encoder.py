@@ -29,11 +29,11 @@ class VideoEncoderModule(nn.Module):
                                   use_boundary=False,
                                   extract_feats=True
                                   )
-
+        self.load_weights_path = load_weights_path
         self.post_processor = nn.Linear(1024 * 2, video_embed_dim)
 
         if load_weights_path is not None:
-            self._load_weights(load_weights_path)
+            self._load_weights()
 
         for p in self.encoder.parameters():
             p.requires_grad = False
@@ -46,7 +46,8 @@ class VideoEncoderModule(nn.Module):
         out = self.post_processor(out)
         return out
 
-    def _load_weights(self, load_path):
+    def _load_weights(self):
+        load_path = self.load_weights_path
         assert os.path.isfile(
             load_path), "Error when loading the model, provided path not found: {}".format(load_path)
         checkpoint = torch.load(load_path)
@@ -54,3 +55,4 @@ class VideoEncoderModule(nn.Module):
 
         # -- copy loaded state into current model and, optionally, optimizer
         self.encoder.load_state_dict(loaded_state_dict)
+        print("VIDEO ENCODER : Encoder Weights Loaded")

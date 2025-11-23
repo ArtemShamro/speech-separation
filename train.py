@@ -83,8 +83,10 @@ def main(config):
     if not resume_from_checkpoit is None:
         model = model_loader.load(model, save_dir)
 
-    model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
+    # temp for DTTNet
+    model.video_encoder._load_weights()
 
+    model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
 
     epoch_len = config.trainer.get("epoch_len")
     if epoch_len is not None:
