@@ -1,0 +1,8 @@
+val:
+  _target_: src.datasets.CustomDirAudioDataset
+  dataset_name : custom_dataset_val
+  limit: null
+  instance_transforms: ${transforms.instance_transforms.inference}
+  data_path: "data/dla_dataset/audio/val"
+  mouth_path: "data/dla_dataset/mouths"
+  
