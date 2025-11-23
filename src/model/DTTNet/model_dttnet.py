@@ -42,6 +42,9 @@ class DTTNetModel(nn.Module):
         x = self.latent(x)
         x = self.decoder(x, skip_results)
 
+        return self.postprocess(x, spectrogram, phase, audio_length)
+    
+    def postprocess(self, x, spectrogram, phase, audio_length):
         B, _, F, T = x.shape
         masks = x.view(B, self.n_sources, 2, F, T)
 
