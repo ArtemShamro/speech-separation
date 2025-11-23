@@ -16,12 +16,15 @@ class CustomDirAudioDataset(BaseDataset):
             self._temp_dir = Path(ROOT_PATH / "data" / "datasets" / dataset_name)
             self._temp_dir.mkdir(parents=True, exist_ok=True)
 
-        if data_path.exists() and data_path.is_dir():
-            self._data_dir = data_path
-
+        if not data_path.exists():
+            raise ValueError(f"Data path does not exist: {data_path}")
+        if not data_path.is_dir():
+            raise ValueError(f"Data path is not a directory: {data_path}")
+        
+        self._data_dir = data_path
         self._mix_dir = self._data_dir / "mix"
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
-        self._mouth_path = Path(mouth_path)
+        self._mouth_path = Path(mouth_path) if mouth_path is not None else None
 
         assert self._mix_dir.exists(), f"Audio directory not found: {self._mix_dir}"
 
@@ -54,7 +57,7 @@ class CustomDirAudioDataset(BaseDataset):
                 print(f"Warning: failed to load {audio_file}: {e}")
                 continue
 
-            if self._mouth_path.exists():
+            if self._mouth_path is not None and self._mouth_path.exists():
                 mouth1, mouth2 = str(audio_file.stem).split("_")
                 mouth1_path = self._mouth_path / Path(f"{mouth1}.npz")
                 mouth2_path =  self._mouth_path / Path(f"{mouth2}.npz")

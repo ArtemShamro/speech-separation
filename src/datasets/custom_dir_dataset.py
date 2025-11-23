@@ -17,7 +17,7 @@ class CustomDirDataset(CustomDirAudioDataset):
 
         super().__init__(
             data_path=audio_dir,
-            mouth_dir=mouth_dir,
+            mouth_path=mouth_dir,
             reindex=reindex,
             dataset_name=dataset_name,
             *args,
