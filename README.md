@@ -41,8 +41,8 @@ The project investigates how visual information improves source separation in si
 
 | Model | SI-SNRi | PESQ | STOI |
 |-------|---------|-------|-------|
-| DTT-Net Audio | 6.17 | – | – |
-| DTT-Net Audio+Video (FiLM) | 7.20 | – | – |
+| DTT-Net Audio 15M | 6.17 | – | – |
+| DTT-Net Audio+Video (FiLM) 25M | 7.20 | – | – |
 | DTT-Net Audio+Video (Cross Attention) 60M | 7.26 | 1.66 | 0.82 |
 | DTT-Net Audio+Video (Cross Attention) 200M | **8.02** | **1.81** | **0.82** |
 
