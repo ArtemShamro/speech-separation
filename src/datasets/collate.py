@@ -38,16 +38,11 @@ def collate_fn(dataset_items: list[dict]):
 
     audio_path = [item["audio_path"] for item in dataset_items]
 
-    video_batch = torch.stack([
-        torch.stack([
-            torch.tensor(item["mouth1"]) if item["mouth1"] is not None else torch.zeros_like(torch.tensor(item["mouth2"])),
-            torch.tensor(item["mouth2"]) if item["mouth2"] is not None else torch.zeros_like(torch.tensor(item["mouth1"]))
-        ])
-        for item in dataset_items
-    ])
-
     sources_list = []
     n_sources = len(dataset_items[0]['sources'])
+
+    video_batch = torch.stack([torch.stack([torch.tensor(item["sources"][source_idx]["video"])
+                              for source_idx in range(n_sources)]) for item in dataset_items])
 
     for source_idx in range(n_sources):
         source_specs = [item["sources"][source_idx]["spectrogram"].squeeze(0).transpose(0, 1)

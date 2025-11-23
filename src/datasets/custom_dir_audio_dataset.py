@@ -58,25 +58,20 @@ class CustomDirAudioDataset(BaseDataset):
                 print(f"Warning: failed to load {audio_file}: {e}")
                 continue
 
-            if self._video_dir.exists():
-                mouth1, mouth2 = str(audio_file.stem).split("_")
-                mouth1_path = self._video_dir / Path(f"{mouth1}.npz")
-                mouth2_path =  self._video_dir / Path(f"{mouth2}.npz")
-                mouth1_path = str(mouth1_path.absolute().resolve())
-                mouth2_path = str(mouth2_path.absolute().resolve())
-            else:
-                mouth1_path = mouth2_path = None
-
             index_element = {
                 "mix_path": str(audio_file.absolute().resolve()),
-                "audio_len": audio_len, 
-                "mouth1_path": mouth1_path, 
-                "mouth2_path": mouth2_path
+                "audio_len": audio_len,
             }
 
-            for source_dir in self._sources:
+            for source_idx, source_dir in enumerate(self._sources):
                 index_element.update({f"{source_dir.name}_path": str(
                     (source_dir / audio_file.name).absolute().resolve())})
+
+                if self._video_dir is not None:
+                    mouth_file = self._video_dir / \
+                        Path(f"{str(audio_file.stem).split('_')[source_idx]}.npz")
+                    index_element.update(
+                        {f"{source_dir.name}_video_path": str(mouth_file.absolute().resolve())})
 
             index.append(index_element)
 

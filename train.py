@@ -1,4 +1,3 @@
-from src.utils.init_utils import set_random_seed, init_logger_saving_resume, get_accelerator, get_metrics, get_param_groups
 from src.trainer import Trainer
 from src.datasets.data_utils import get_dataloaders
 from src.logger import ModelLoader
@@ -10,6 +9,12 @@ import warnings
 
 from src.logger import DummyWriter
 from dotenv import load_dotenv
+from src.utils.init_utils import (set_random_seed,
+                                  init_logger_saving_resume,
+                                  get_accelerator,
+                                  get_metrics,
+                                  get_param_groups,
+                                  set_learnable_parameters)
 load_dotenv()
 
 
@@ -59,7 +64,7 @@ def main(config):
 
     # build model architecture, then print to console
     model = instantiate(config.model).to(device)
-    logger.info(model)
+    # logger.info(model)
 
     # get function handles of loss and metrics
     loss_function = instantiate(
@@ -67,6 +72,8 @@ def main(config):
 
     metrics = get_metrics(config)
 
+    # freeze / unfreeze parameters
+    # model = set_learnable_parameters(config.model, model)
     # build optimizer, learning rate scheduler
     param_groups = get_param_groups(config, model)
 
@@ -75,6 +82,9 @@ def main(config):
 
     if not resume_from_checkpoit is None:
         model = model_loader.load(model, save_dir)
+
+    # temp for DTTNet
+    model.video_encoder._load_weights()
 
     model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
 
