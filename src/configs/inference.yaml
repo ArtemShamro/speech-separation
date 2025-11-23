@@ -1,15 +1,16 @@
 defaults:
   - model: dttnet
   - metrics: inference
-  - datasets: inference # we do not want to run inference on training data
+  - datasets: inference
   - dataloader: baseline
   - transforms: only_instance
   - _self_
 
 model_loader:
-  from_pretrained: "areshx/test_repo@main"
+  from_pretrained: null
+
 inferencer:
-  device_tensors: ["spectrogram", "phase", "sources", "audio", "audio_length"]
-  device: auto # device name or "auto"
-  save_path: "inferencer_test" # any name here, can be a dataset name
+  device_tensors: ["spectrogram", "phase", "sources", "audio", "audio_length", "video"]
+  device: auto
+  save_path: "inferencer_results"
   seed: 1
