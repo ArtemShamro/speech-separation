@@ -32,7 +32,10 @@ def get_param_groups(config, model):
             decay_params.append(param)
 
     param_groups = [
-        {"params": decay_params, "weight_decay": config.optimizer.get("weight_decay", 0.0)},
+        {
+            "params": decay_params,
+            "weight_decay": config.optimizer.get("weight_decay", 0.0),
+        },
         {"params": no_decay_params, "weight_decay": 0.0},
     ]
 
@@ -58,9 +61,7 @@ def get_metrics(config):
     for metric_type in ["train", "inference"]:
         for metric_config in config.metrics.get(metric_type, []):
             # use text_encoder in metrics
-            metrics[metric_type].append(
-                instantiate(metric_config)
-            )
+            metrics[metric_type].append(instantiate(metric_config))
     return metrics
 
 
@@ -182,7 +183,8 @@ def resume_from_checkpoint_init(config, logger, save_dir, accelerator: Accelerat
             WriterClass = get_class(config.writer._target_)
             # предполагаем, что класс умеет вернуть (config, checkpoint_path)
             resume_path = WriterClass.download_model_checkpoint(
-                config, resume_path, save_dir, logger)
+                config, resume_path, save_dir, logger
+            )
 
         # broadcast
         obj = [str(resume_path)]
@@ -215,7 +217,9 @@ def init_logger_saving_resume(config, accelerator: Accelerator):
         logger, save_dir
     """
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
-    save_dir = ROOT_PATH / config.trainer.save_dir / f"{config.writer.run_name}_{timestamp}"
+    save_dir = (
+        ROOT_PATH / config.trainer.save_dir / f"{config.writer.run_name}_{timestamp}"
+    )
 
     if not accelerator.is_main_process:
         logger = logging.getLogger("train-dummy")
@@ -232,6 +236,8 @@ def init_logger_saving_resume(config, accelerator: Accelerator):
         logger.setLevel(logging.DEBUG)
 
     # применяем resume-логику
-    config, resume_path = resume_from_checkpoint_init(config, logger, save_dir, accelerator)
+    config, resume_path = resume_from_checkpoint_init(
+        config, logger, save_dir, accelerator
+    )
 
     return logger, save_dir, resume_path, config

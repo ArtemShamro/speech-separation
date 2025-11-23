@@ -7,7 +7,17 @@ from .modules.latent import LatentModule
 
 
 class DTTNetModel(nn.Module):
-    def __init__(self, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=2, use_checkpoints=False):
+    def __init__(
+        self,
+        g=32,
+        n_sources=2,
+        n_layers=3,
+        n_idp_layers=3,
+        n_fft=512,
+        hop_length=128,
+        n_heads=2,
+        use_checkpoints=False,
+    ):
         super().__init__()
         self.n_sources = n_sources
         self.n_fft = n_fft
@@ -31,9 +41,9 @@ class DTTNetModel(nn.Module):
         )
 
         self.latent = LatentModule(
-            fc_dim=(fc_dim + 2 ** n_layers) // 2 ** n_layers,
+            fc_dim=(fc_dim + 2**n_layers) // 2**n_layers,
             n_heads=n_heads,
-            n_channels=g * 2 ** n_layers,
+            n_channels=g * 2**n_layers,
             n_layers=n_idp_layers,
         )
 
@@ -48,21 +58,21 @@ class DTTNetModel(nn.Module):
         # [B, n_sources * 2, F, T] -> List[{"audio", "spec", "phase"}]
         outs = []
         for i in range(self.n_sources):
-            mask_spec = masks[:, i, 0]          # [B, F, T]
-            mask_phase = masks[:, i, 1]         # [B, F, T]
+            mask_spec = masks[:, i, 0]  # [B, F, T]
+            mask_phase = masks[:, i, 1]  # [B, F, T]
 
             source_spec, source_phase = self.recon_signal_spectral(
                 spectrogram, phase, mask_spec, mask_phase
             )
-            source_audio = self.recon_audio(
-                source_spec, source_phase, audio_length
-            )
+            source_audio = self.recon_audio(source_spec, source_phase, audio_length)
 
-            outs.append({
-                "audio": source_audio,
-                "spectrogram": source_spec,
-                "phase": source_phase,
-            })
+            outs.append(
+                {
+                    "audio": source_audio,
+                    "spectrogram": source_spec,
+                    "phase": source_phase,
+                }
+            )
 
         return {"preds": outs}
 

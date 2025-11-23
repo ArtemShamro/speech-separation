@@ -10,14 +10,11 @@ class LatentModule(nn.Module):
         super().__init__()
         assert n_channels % n_heads == 0, "n_channels must be divisible by n_heads"
 
-        self.tfc_tdf = TFC_TDF_Block(
-            channels=n_channels,
-            fc_dim=fc_dim
-        )
+        self.tfc_tdf = TFC_TDF_Block(channels=n_channels, fc_dim=fc_dim)
 
-        self.idp_modules = nn.ModuleList([
-            IDPModule(n_heads, n_channels) for _ in range(n_layers)
-        ])
+        self.idp_modules = nn.ModuleList(
+            [IDPModule(n_heads, n_channels) for _ in range(n_layers)]
+        )
 
     def forward(self, x):
         x = self.tfc_tdf(x)
@@ -92,9 +89,7 @@ class TC_FC_RNN(nn.Module):
             bidirectional=True,
         )
 
-        self.fc = nn.Linear(
-            in_chanels * 4, in_chanels
-        )
+        self.fc = nn.Linear(in_chanels * 4, in_chanels)
 
     def forward(self, x):
         # x.shape is [B x H x F, T, C // H] or [B x H x T, F, C // H]

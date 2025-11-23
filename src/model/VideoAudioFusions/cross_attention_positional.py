@@ -5,7 +5,9 @@ import torch.nn as nn
 
 def _build_sinusoids(length: int, dim: int, device: torch.device):
     position = torch.arange(length, device=device).unsqueeze(1)
-    div_term = torch.exp(torch.arange(0, dim, 2, device=device) * (-math.log(10000.0) / dim))
+    div_term = torch.exp(
+        torch.arange(0, dim, 2, device=device) * (-math.log(10000.0) / dim)
+    )
     pe = torch.zeros(length, dim, device=device)
     pe[:, 0::2] = torch.sin(position * div_term)
     pe[:, 1::2] = torch.cos(position * div_term)
@@ -48,7 +50,9 @@ class CrossAttentionPositional(nn.Module):
             nn.Sigmoid(),
         )
 
-    def forward(self, audio_features: torch.Tensor, video_features: torch.Tensor) -> torch.Tensor:
+    def forward(
+        self, audio_features: torch.Tensor, video_features: torch.Tensor
+    ) -> torch.Tensor:
         B, C_a, F_a, T_a = audio_features.shape
         B, C_v, E_v, T_v = video_features.shape
 

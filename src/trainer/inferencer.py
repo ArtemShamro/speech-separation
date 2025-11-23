@@ -177,7 +177,9 @@ class Inferencer(BaseTrainer):
                 if audio_tensor.dim() == 1:
                     audio_tensor = audio_tensor.unsqueeze(0)
 
-                save_path = self.save_path / part / f"source_{pred_idx}" / f"{file_stem}.wav"
+                save_path = (
+                    self.save_path / part / f"source_{pred_idx}" / f"{file_stem}.wav"
+                )
                 torchaudio.save(save_path, audio_tensor, self.sample_rate)
 
         return batch

@@ -9,6 +9,7 @@ class ConsistentCompose(Compose):
     Compose multiple augmentations and apply them consistently
     across related audio signals (e.g., mixture and sources).
     """
+
     transforms: List[BaseAugmentation]
 
     def __init__(self, transforms: List[BaseAugmentation]):
