@@ -7,6 +7,7 @@ from .modules.latent import LatentModule
 from src.model.VideoEncoders.resnet_video_encoder import VideoEncoder
 from src.model.VideoAudioFusions.temporal_alignment import TemporalAligner
 from src.model.VideoAudioFusions.cross_attention_fusion import CrossAttentionFusion
+from src.model.VideoAudioFusions.cross_attention_positional import CrossAttentionPositional
 
 
 class DTTNetVisionModel(nn.Module):
@@ -40,6 +41,12 @@ class DTTNetVisionModel(nn.Module):
             )
         elif self.fusion_method == "cross_attention":
             self.fusion = CrossAttentionFusion(
+                audio_channels=self.audio_dim,
+                video_channels=2 * video_channels,
+                n_heads=n_heads,
+            )
+        elif self.fusion_method == "cross_attention_positional":
+            self.fusion = CrossAttentionPositional(
                 audio_channels=self.audio_dim,
                 video_channels=2 * video_channels,
                 n_heads=n_heads,
