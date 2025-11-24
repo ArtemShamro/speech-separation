@@ -6,20 +6,18 @@ from src.model.DTTNet.blocks.block_sampling import DownSamplingBlock
 
 
 class Encoder(nn.Module):
-    def __init__(
-        self, fc_dim, in_channels=2, out_channels=32, n_layers=3, use_checkpoints=False
-    ):
+    def __init__(self, fc_dim, in_channels=2, out_channels=32, n_layers=3, use_checkpoints=False):
         super().__init__()
         self.use_checkpoints = use_checkpoints
         self.init_conv = nn.Conv2d(in_channels, out_channels, 1)
 
         self.encoder_layers = nn.ModuleList()
         for layer_idx in range(n_layers):
-            enc_dim = (fc_dim + (2**layer_idx)) if layer_idx > 0 else fc_dim
+            enc_dim = (fc_dim + (2 ** layer_idx)) if layer_idx > 0 else fc_dim
             self.encoder_layers.append(
                 EncoderBlock(
-                    fc_dim=enc_dim // (2**layer_idx),
-                    channels=out_channels * 2**layer_idx,
+                    fc_dim=enc_dim // (2 ** layer_idx),
+                    channels=out_channels * 2 ** layer_idx,
                     use_checkpoints=use_checkpoints,
                 )
             )
@@ -39,9 +37,7 @@ class EncoderBlock(nn.Module):
     def __init__(self, fc_dim, channels=32, use_checkpoints=False):
         super().__init__()
 
-        self.tfc_tdf = TFC_TDF_Block(
-            channels, fc_dim, bf=2, use_checkpoints=use_checkpoints
-        )
+        self.tfc_tdf = TFC_TDF_Block(channels, fc_dim, bf=2, use_checkpoints=use_checkpoints)
         self.downsampling = DownSamplingBlock(channels)
 
     def forward(self, x):

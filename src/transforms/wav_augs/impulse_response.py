@@ -28,9 +28,8 @@ class ApplyImpulseResponse(BaseAugmentation):
         super().__init__()
 
         if data_dir is None:
-            data_dir = Path(
-                ROOT_PATH / "data" / "datasets" / "rirs_noises" / "simulated_rirs"
-            )
+            data_dir = Path(ROOT_PATH / "data" / "datasets"
+                            / "rirs_noises" / "simulated_rirs")
             data_dir.mkdir(exist_ok=True, parents=True)
         self._data_dir = Path(data_dir)
 

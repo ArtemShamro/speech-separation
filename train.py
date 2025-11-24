@@ -1,10 +1,4 @@
-from src.utils.init_utils import (
-    set_random_seed,
-    init_logger_saving_resume,
-    get_accelerator,
-    get_metrics,
-    get_param_groups,
-)
+from src.utils.init_utils import set_random_seed, init_logger_saving_resume, get_accelerator, get_metrics, get_param_groups
 from src.trainer import Trainer
 from src.datasets.data_utils import get_dataloaders
 from src.logger import ModelLoader
@@ -16,7 +10,6 @@ import warnings
 
 from src.logger import DummyWriter
 from dotenv import load_dotenv
-
 load_dotenv()
 
 
@@ -48,9 +41,7 @@ def main(config):
 
     # config = CometMLWriter.download_model_checkpoint(config, logger=None)  # 1!!!
     resume_from_checkpoint = config.trainer.get("resume_from", None) is not None
-    logger, save_dir, resume_path, config = init_logger_saving_resume(
-        config, accelerator
-    )
+    logger, save_dir, resume_path, config = init_logger_saving_resume(config, accelerator)
     logger.info(f"SAVE DIR : {save_dir}")
 
     # setup_saving_and_logging(config, is_main)
@@ -58,9 +49,7 @@ def main(config):
 
     writer = DummyWriter()
     if is_main:
-        writer = instantiate(
-            config.writer, logger, project_config, resume=resume_from_checkpoint
-        )
+        writer = instantiate(config.writer, logger, project_config, resume=resume_from_checkpoint)
 
     # setup data_loader instances
     # batch_transforms should be put on device
@@ -73,7 +62,8 @@ def main(config):
     logger.info(model)
 
     # get function handles of loss and metrics
-    loss_function = instantiate(config.loss_function).to(device)
+    loss_function = instantiate(
+        config.loss_function).to(device)
 
     metrics = get_metrics(config)
 
@@ -89,9 +79,7 @@ def main(config):
         config.trainer["epoch_len"] = len(dataloaders["train"])
         print(f"Set epoch_len to {config.trainer['epoch_len']}")
 
-    lr_scheduler = instantiate(
-        config.lr_scheduler, optimizer=optimizer, _convert_="object"
-    )
+    lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer, _convert_="object")
 
     if resume_from_checkpoint is not None:
         model = model_loader.load(model, save_dir)

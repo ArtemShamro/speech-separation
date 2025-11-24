@@ -40,27 +40,23 @@ class ModelLoader:
                 if self.accelerator is None or self.accelerator.is_main_process:
                     experiment_id = path_to_pretrained.replace("writer:", "")
                     self.logger.info(
-                        f"Loading pretrained model from CometML experiment {experiment_id}"
-                    )
+                        f"Loading pretrained model from CometML experiment {experiment_id}")
                     WriterClass = get_class(self.project_config.writer._target_)
                     path_to_pretrained = WriterClass.download_model_checkpoint(
-                        self.project_config, experiment_id, save_dir, self.logger
-                    )
+                        self.project_config, experiment_id, save_dir, self.logger)
                     obj = [str(path_to_pretrained)]
                 else:
                     obj = [None]
                 if self.accelerator is not None:
                     self.accelerator.wait_for_everyone()
-                path_to_pretrained = Path(
-                    broadcast_object_list(obj, from_process=0)[0]
-                )  # type: ignore
+                path_to_pretrained = Path(broadcast_object_list(
+                    obj, from_process=0)[0])  # type: ignore
             if Path(path_to_pretrained).exists():
                 self.logger.info(f"Loading local checkpoint: {path_to_pretrained}")
                 return self._from_local_pretrained(model, path_to_pretrained)
             else:
                 self.logger.info(
-                    f"Loading pretrained model from Hugging Face: {path_to_pretrained}"
-                )
+                    f"Loading pretrained model from Hugging Face: {path_to_pretrained}")
                 return self._from_hf_pretrained(model, path_to_pretrained)
         return model
 
@@ -85,7 +81,10 @@ class ModelLoader:
         if branch != "main":
             try:
                 api.create_branch(
-                    repo_id=repo_id, branch=branch, repo_type="model", token=token
+                    repo_id=repo_id,
+                    branch=branch,
+                    repo_type="model",
+                    token=token
                 )
                 logger.info(f"Created or verified branch: {branch}")
             except Exception as e:
@@ -102,9 +101,8 @@ class ModelLoader:
             return
 
         try:
-            checkpoint = torch.load(
-                full_checkpoint_path, map_location="cpu", weights_only=False
-            )
+            checkpoint = torch.load(full_checkpoint_path,
+                                    map_location="cpu", weights_only=False)
             if isinstance(checkpoint, dict) and "state_dict" in checkpoint:
                 state_dict = align_state_dict_keys(checkpoint["state_dict"])
             else:
@@ -131,7 +129,7 @@ class ModelLoader:
                 repo_type="model",
                 revision=branch,
                 commit_message=f"Comet exp id: {writer_id}",
-                token=token,
+                token=token
             )
 
             commit_url = getattr(info, "commit_url", None)
@@ -157,11 +155,12 @@ class ModelLoader:
         repo_id, revision = path_to_pretrained.split("@")
         try:
             self.logger.info(
-                f"Downloading model from Hugging Face Hub: {repo_id}@{revision} ({filename})"
-            )
+                f"Downloading model from Hugging Face Hub: {repo_id}@{revision} ({filename})")
 
             model_path = hf_hub_download(
-                repo_id=repo_id, filename="model.pth", revision=revision
+                repo_id=repo_id,
+                filename="model.pth",
+                revision=revision
             )
             device = next(model.parameters()).device
             checkpoint = torch.load(model_path, map_location=device, weights_only=False)
@@ -169,8 +168,7 @@ class ModelLoader:
             model = self._load_checkpoint(model, checkpoint)
 
             self.logger.info(
-                f"Model weights successfully loaded from Hugging Face: {repo_id}@{revision}"
-            )
+                f"Model weights successfully loaded from Hugging Face: {repo_id}@{revision}")
 
         except Exception as e:
             self.logger.error(f"Failed to load model from Hugging Face: {e}")
@@ -193,9 +191,7 @@ class ModelLoader:
         self.logger.info(f"Loading model weights from: {pretrained_path} ...")
 
         device = next(model.parameters()).device
-        checkpoint = torch.load(
-            pretrained_path, map_location=device, weights_only=False
-        )
+        checkpoint = torch.load(pretrained_path, map_location=device, weights_only=False)
 
         model = self._load_checkpoint(model, checkpoint)
 

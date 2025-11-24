@@ -53,7 +53,9 @@ def main(config):
     metrics = {"inference": []}
     for metric_config in config.metrics.get("inference", []):
         # use text_encoder in metrics
-        metrics["inference"].append(instantiate(metric_config))
+        metrics["inference"].append(
+            instantiate(metric_config)
+        )
 
     inferencer = Inferencer(
         model=model,

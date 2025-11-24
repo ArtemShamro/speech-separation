@@ -8,17 +8,7 @@ from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirAudioDataset(BaseDataset):
-    def __init__(
-        self,
-        data_path,
-        mouth_path=None,
-        temp_dir=None,
-        reindex=False,
-        dataset_name: str = "custom_dataset",
-        part: str = "train",
-        *args,
-        **kwargs,
-    ):
+    def __init__(self, data_path, mouth_path=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
         self.dataset_name = dataset_name
         data_path = Path(data_path)
 
@@ -53,11 +43,7 @@ class CustomDirAudioDataset(BaseDataset):
     def _create_index(self):
         index = []
         audio_files = sorted(
-            [
-                p
-                for p in self._mix_dir.iterdir()
-                if p.suffix.lower() in [".wav", ".flac", ".mp3", ".m4a"]
-            ]
+            [p for p in self._mix_dir.iterdir() if p.suffix.lower() in [".wav", ".flac", ".mp3", ".m4a"]]
         )
 
         for audio_file in tqdm(audio_files, desc="Preparing custom dataset"):
@@ -71,7 +57,7 @@ class CustomDirAudioDataset(BaseDataset):
             if self._mouth_path.exists():
                 mouth1, mouth2 = str(audio_file.stem).split("_")
                 mouth1_path = self._mouth_path / Path(f"{mouth1}.npz")
-                mouth2_path = self._mouth_path / Path(f"{mouth2}.npz")
+                mouth2_path =  self._mouth_path / Path(f"{mouth2}.npz")
                 mouth1_path = str(mouth1_path.absolute().resolve())
                 mouth2_path = str(mouth2_path.absolute().resolve())
             else:
@@ -81,17 +67,12 @@ class CustomDirAudioDataset(BaseDataset):
                 "mix_path": str(audio_file.absolute().resolve()),
                 "audio_len": audio_len,
                 "mouth1_path": mouth1_path,
-                "mouth2_path": mouth2_path,
+                "mouth2_path": mouth2_path
             }
 
             for source_dir in self._sources:
-                index_element.update(
-                    {
-                        f"{source_dir.name}_path": str(
-                            (source_dir / audio_file.name).absolute().resolve()
-                        )
-                    }
-                )
+                index_element.update({f"{source_dir.name}_path": str(
+                    (source_dir / audio_file.name).absolute().resolve())})
 
             index.append(index_element)
 

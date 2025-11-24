@@ -302,7 +302,6 @@ class CometMLWriter:
         model_name = "best_model_checkpoint"
 
         from comet_ml.api import API
-
         api = API()
 
         output_dir = Path(output_dir)

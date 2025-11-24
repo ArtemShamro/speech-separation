@@ -18,9 +18,7 @@ class TemporalAligner(nn.Module):
         video_proj = video_proj.repeat(1, 1, F_a, 1)
 
         if T_v != T_a:
-            video_proj = F.interpolate(
-                video_proj, size=(F_a, T_a), mode="bilinear", align_corners=False
-            )
+            video_proj = F.interpolate(video_proj, size=(F_a, T_a), mode='bilinear', align_corners=False)
 
         audio_proj = self.audio_projection(audio_features)
         combined = torch.cat([audio_proj, video_proj], dim=1)
