@@ -18,23 +18,23 @@ The project investigates how visual information improves source separation in si
 ### **Model Architecture**
 
 **Base model: DTTNet**
-- Encoder–Latent–Decoder UNet-like structure  
-- TFC–TDF blocks for spectral modeling  
-- Improved Dual-Path (IDP) modules  
-- Multi-head channel splitting  
+- Encoder–Latent–Decoder UNet-like structure
+- TFC–TDF blocks for spectral modeling
+- Improved Dual-Path (IDP) modules
+- Multi-head channel splitting
 - Reconstruction using magnitude/phase masks and inverse STFT
 
 **Audio-Visual Extensions**
 - **FiLM Fusion:** Feature-wise Linear Modulation for audio–video conditioning (channel- and frequency-wise)
-- **Cross-Attention Fusion:** Transformer-style interaction between audio and video streams  
-- **VPBlock + CAF:** Video-Prior and Channel-Attention Fusion modules adopted from RTFS-Net  
+- **Cross-Attention Fusion:** Transformer-style interaction between audio and video streams
+- **VPBlock + CAF:** Video-Prior and Channel-Attention Fusion modules adopted from RTFS-Net
 
 ### **Training**
-- **Permutation-Invariant Training (PIT)**  
-- STFT: `n_fft=1024`, `hop_length=256`  
-- AdamW (`lr=1e-3`, weight decay `1e-5`, cosine LR + warmup)  
-- Augmentations: reverb, gain, speed, MUSAN noise, SpecAugment  
-- Hardware: A100, bf16  
+- **Permutation-Invariant Training (PIT)**
+- STFT: `n_fft=1024`, `hop_length=256`
+- AdamW (`lr=1e-3`, weight decay `1e-5`, cosine LR + warmup)
+- Augmentations: reverb, gain, speed, MUSAN noise, SpecAugment
+- Hardware: A100, bf16
 - Batch sizes: 64 (FiLM), 16 (Cross-Attention)
 
 ### **Results**
@@ -44,12 +44,12 @@ The project investigates how visual information improves source separation in si
 | DTT-Net Audio 15M | 6.17 | – | – |
 | DTT-Net Audio+Video (FiLM) 25M | 7.20 | – | – |
 | DTT-Net Audio+Video (Cross Attention) 60M | 7.26 | 1.66 | 0.82 |
-| DTT-Net Audio+Video (Cross Attention) 200M | **8.02** | **1.81** | **0.82** |
+| DTT-Net Audio+Video (Cross Attention) 200M | **8.64** | **1.87** | **0.85** |
 
 Audio-visual fusion improves SI-SNRi by **up to +2 dB**, accelerates convergence, and increases robustness.
 
-### **Demo:**  
-A demo notebook is available at `src/notebooks/demo.ipynb`.  
+### **Demo:**
+A demo notebook is available at `src/notebooks/demo.ipynb`.
 
 ## Installation
 
