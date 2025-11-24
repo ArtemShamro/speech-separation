@@ -26,11 +26,11 @@ class CustomDirAudioDataset(BaseDataset):
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
         self._mouth_path = Path(mouth_path) if mouth_path is not None else None
 
-        if self._mouth_path is not None:
-            if not self._mouth_path.exists():
-                raise ValueError(f"Mouth path does not exist: {data_path}")
-            if not self._mouth_path.is_dir():
-                raise ValueError(f"Mouth path is not a directory: {data_path}")
+        
+        if not self._mouth_path.exists():
+            raise ValueError(f"Mouth path does not exist: {data_path}")
+        if not self._mouth_path.is_dir():
+            raise ValueError(f"Mouth path is not a directory: {data_path}")
 
         assert self._mix_dir.exists(), f"Mix directory with audio not found: {self._mix_dir}"
 
