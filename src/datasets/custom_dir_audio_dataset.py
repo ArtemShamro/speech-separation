@@ -8,29 +8,27 @@ from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirAudioDataset(BaseDataset):
-    def __init__(self, data_path, mouth_path=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
+    def __init__(self, data_path, mouth_path, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
         self.dataset_name = dataset_name
-        data_path = Path(data_path)
+        self._data_dir = Path(data_path)
+        self._mouth_path = Path(mouth_path)
 
         if temp_dir is None:
             self._temp_dir = Path(ROOT_PATH / "data" / "datasets" / dataset_name)
             self._temp_dir.mkdir(parents=True, exist_ok=True)
 
-        if not data_path.exists():
-            raise ValueError(f"Audio path does not exist: {data_path}")
-        if not data_path.is_dir():
-            raise ValueError(f"Audio path is not a directory: {data_path}")
-        
-        self._data_dir = data_path
+        if not self._data_dir.exists():
+            raise ValueError(f"Audio path does not exist: {self._data_dir}")
+        if not self._data_dir.is_dir():
+            raise ValueError(f"Audio path is not a directory: {self._data_dir}")
+
+        if not self._mouth_path.exists():
+            raise ValueError(f"Audio path does not exist: {self._mouth_path}")
+        if not self._mouth_path.is_dir():
+            raise ValueError(f"Audio path is not a directory: {self._mouth_path}")
+
         self._mix_dir = self._data_dir / "mix"
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
-        self._mouth_path = Path(mouth_path) if mouth_path is not None else None
-
-        
-        if not self._mouth_path.exists():
-            raise ValueError(f"Mouth path does not exist: {data_path}")
-        if not self._mouth_path.is_dir():
-            raise ValueError(f"Mouth path is not a directory: {data_path}")
 
         assert self._mix_dir.exists(), f"Mix directory with audio not found: {self._mix_dir}"
 
@@ -86,3 +84,4 @@ class CustomDirAudioDataset(BaseDataset):
             index.append(index_element)
 
         return index
+        
