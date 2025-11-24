@@ -45,7 +45,7 @@ def main(config):
     set_random_seed(config.trainer.seed + accelerator.process_index)
 
     # config = CometMLWriter.download_model_checkpoint(config, logger=None)  # 1!!!
-    resume_from_checkpoit = config.trainer.get("resume_from", None) is not None
+    resume_from_checkpoint = config.trainer.get("resume_from", None) is not None
     logger, save_dir, resume_path, config = init_logger_saving_resume(config, accelerator)
     logger.info(f"SAVE DIR : {save_dir}")
 
@@ -54,7 +54,7 @@ def main(config):
 
     writer = DummyWriter()
     if is_main:
-        writer = instantiate(config.writer, logger, project_config, resume=resume_from_checkpoit)
+        writer = instantiate(config.writer, logger, project_config, resume=resume_from_checkpoint)
 
     # setup data_loader instances
     # batch_transforms should be put on device
@@ -74,23 +74,31 @@ def main(config):
 
     # freeze / unfreeze parameters
     # model = set_learnable_parameters(config.model, model)
+
     # build optimizer, learning rate scheduler
     param_groups = get_param_groups(config, model)
 
     optimizer = instantiate(config.optimizer, params=param_groups, _convert_="object")
     lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer, _convert_="object")
 
-    if not resume_from_checkpoit is None:
+    if not config.resume_from_checkpoit is None:
         model = model_loader.load(model, save_dir)
-
-    # temp for DTTNet
-    model.video_encoder._load_weights()
 
     model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
 
     epoch_len = config.trainer.get("epoch_len")
     if epoch_len is not None:
         epoch_len = epoch_len // accelerator.num_processes
+    else:
+        config.trainer["epoch_len"] = len(dataloaders["train"])
+        print(f"Set epoch_len to {config.trainer['epoch_len']}")
+
+    lr_scheduler = instantiate(config.lr_scheduler, optimizer=optimizer, _convert_="object")
+
+    if not resume_from_checkpoint:
+        model = model_loader.load(model, save_dir)
+
+    model, optimizer, lr_scheduler = accelerator.prepare(model, optimizer, lr_scheduler)
 
     trainer = Trainer(
         model=model,

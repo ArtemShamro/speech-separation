@@ -3,16 +3,13 @@ train:
   dataset_name : custom_dataset_train
   limit: null
   instance_transforms: ${transforms.instance_transforms.train}
-  data_path: "/root/dataset/dla_dataset/audio/train"
-  video_dir: "/root/dataset/dla_dataset/mouths"
-  # mouths_dir
+  data_path: "data/dla_dataset/audio/train"
+  mouth_path: "data/dla_dataset/mouths"
 
-# we filter partitions in one batch test to check the pipeline
-# do not filter test dataset, you want to evaluate on the whole dataset
 val:
   _target_: src.datasets.CustomDirAudioDataset
   dataset_name : custom_dataset_val
   limit: null
   instance_transforms: ${transforms.instance_transforms.inference}
-  data_path: "/root/dataset/dla_dataset/audio/val"
-  video_dir: "/root/dataset/dla_dataset/mouths"
+  data_path: "data/dla_dataset/audio/val"
+  mouth_path: "data/dla_dataset/mouths"

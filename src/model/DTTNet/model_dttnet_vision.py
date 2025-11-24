@@ -1,18 +1,51 @@
 import torch
 from torch import nn
-from torch.nn import functional as F
 from .modules.encoder import Encoder
 from .modules.decoder import Decoder
 from .modules.latent import LatentModule
 
+from src.model.VideoEncoders.resnet_video_encoder import VideoEncoder
+from src.model.VideoAudioFusions.temporal_alignment import TemporalAligner
+from src.model.VideoAudioFusions.cross_attention_positional import CrossAttentionPositional
 
-class DTTNetModel(nn.Module):
-    def __init__(self, g=32, n_sources=2, n_layers=3, n_idp_layers=3, n_fft=512, hop_length=128, n_heads=2, use_checkpoints=False):
+
+class DTTNetVisionModel(nn.Module):
+    def __init__(
+        self,
+        g=32,
+        n_sources=2,
+        n_layers=3,
+        n_idp_layers=3,
+        n_fft=512,
+        hop_length=128,
+        n_heads=2,
+        video_channels=512,
+        fusion_method="temporal_alignment",
+        use_checkpoints=False
+    ):
         super().__init__()
         self.n_sources = n_sources
         self.n_fft = n_fft
         self.hop_length = hop_length
         fc_dim = n_fft // 2 + 1
+        self.audio_dim = g * 2 ** n_layers
+        self.fusion_method = fusion_method
+
+        self.video_encoder = VideoEncoder()
+
+        if self.fusion_method == "temporal_alignment":
+            self.fusion = TemporalAligner(
+                audio_channels=self.audio_dim,
+                video_channels=2 * video_channels,
+            )
+        elif self.fusion_method == "cross_attention_positional":
+            self.fusion = CrossAttentionPositional(
+                audio_channels=self.audio_dim,
+                video_channels=2 * video_channels,
+                n_heads=n_heads,
+            )
+        else:
+            raise ValueError(f"{self.fusion_method} audio-video fusion method is not supported yet")
 
         self.encoder = Encoder(
             fc_dim,
@@ -33,26 +66,31 @@ class DTTNetModel(nn.Module):
         self.latent = LatentModule(
             fc_dim=(fc_dim + 2 ** n_layers) // 2 ** n_layers,
             n_heads=n_heads,
-            n_channels=g * 2 ** n_layers,
+            n_channels=g * 2 ** n_layers * 2,
             n_layers=n_idp_layers,
         )
 
-    def forward(self, spectrogram, phase, audio_length, **batch):
-        x, skip_results = self.encoder(spectrogram, phase)
-        x = self.latent(x)
+        self.channel_compression = nn.Sequential(
+            nn.Conv2d(self.audio_dim * 2, self.audio_dim, 1),
+            nn.InstanceNorm2d(self.audio_dim),
+            nn.GELU()
+        )
+
+    def forward(self, spectrogram, video, phase, audio_length, **batch):
+        x_audio, skip_results = self.encoder(spectrogram, phase)
+        video_features = self.video_encoder(video)
+
+        x_combined = self.fusion(x_audio, video_features)
+        x = self.channel_compression(self.latent(x_combined))
         x = self.decoder(x, skip_results)
 
-        return self.postprocess(x, spectrogram, phase, audio_length)
-    
-    def postprocess(self, x, spectrogram, phase, audio_length):
         B, _, F, T = x.shape
         masks = x.view(B, self.n_sources, 2, F, T)
 
-        # [B, n_sources * 2, F, T] -> List[{"audio", "spec", "phase"}]
         outs = []
         for i in range(self.n_sources):
-            mask_spec = masks[:, i, 0]          # [B, F, T]
-            mask_phase = masks[:, i, 1]         # [B, F, T]
+            mask_spec = masks[:, i, 0]
+            mask_phase = masks[:, i, 1]
 
             source_spec, source_phase = self.recon_signal_spectral(
                 spectrogram, phase, mask_spec, mask_phase

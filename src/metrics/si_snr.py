@@ -8,11 +8,11 @@ class SiSnr(BaseMetric):
     Compute the Scale-Invariant Signal-to-Noise Ratio (SI-SNR) metric.
     """
 
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
         super().__init__()
         self.eps = 1e-5
 
-    def __call__(self, pred_audio_batch, true_audio_batch):
+    def __call__(self, pred_audio_batch, true_audio_batch, mix_audio_batch=None):
         """
         Compute the SI-SNR between predicted and reference audio signals.
 

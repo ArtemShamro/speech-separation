@@ -1,8 +1,8 @@
 train:
   get_spectrogram:
     _target_: torchaudio.transforms.Spectrogram
-    n_fft: 512
-    hop_length: 128
+    n_fft: 1024
+    hop_length: 256
     power: null
   video:
     _target_: src.model.lipreading.preprocess.Compose
@@ -19,8 +19,8 @@ train:
 inference:
   get_spectrogram:
     _target_: torchaudio.transforms.Spectrogram
-    n_fft: 512
-    hop_length: 128
+    n_fft: 1024
+    hop_length: 256
     power: null
   video:
     _target_: src.model.lipreading.preprocess.Compose

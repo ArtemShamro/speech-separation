@@ -1,10 +1,6 @@
-import os
-import shutil
 from pathlib import Path
 import torchaudio
 from tqdm import tqdm
-import gdown
-import re
 import json
 
 from src.datasets.base_dataset import BaseDataset
@@ -12,22 +8,29 @@ from src.utils.io_utils import ROOT_PATH
 
 
 class CustomDirAudioDataset(BaseDataset):
-    def __init__(self, data_path, video_dir=None, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
+    def __init__(self, data_path, mouth_path, temp_dir=None, reindex=False, dataset_name: str = "custom_dataset", part: str = "train", *args, **kwargs):
         self.dataset_name = dataset_name
-        data_path = Path(data_path)
+        self._data_dir = Path(data_path)
+        self._mouth_path = Path(mouth_path)
 
         if temp_dir is None:
             self._temp_dir = Path(ROOT_PATH / "data" / "datasets" / dataset_name)
             self._temp_dir.mkdir(parents=True, exist_ok=True)
 
-        if data_path.exists() and data_path.is_dir():
-            self._data_dir = data_path
+        if not self._data_dir.exists():
+            raise ValueError(f"Audio path does not exist: {self._data_dir}")
+        if not self._data_dir.is_dir():
+            raise ValueError(f"Audio path is not a directory: {self._data_dir}")
+
+        if not self._mouth_path.exists():
+            raise ValueError(f"Audio path does not exist: {self._mouth_path}")
+        if not self._mouth_path.is_dir():
+            raise ValueError(f"Audio path is not a directory: {self._mouth_path}")
 
         self._mix_dir = self._data_dir / "mix"
         self._sources = [p for p in self._data_dir.iterdir() if p.name != "mix"]
-        self._video_dir = video_dir
 
-        assert self._mix_dir.exists(), f"Audio directory not found: {self._mix_dir}"
+        assert self._mix_dir.exists(), f"Mix directory with audio not found: {self._mix_dir}"
 
         index = self._get_or_load_index(reindex)
 
@@ -58,20 +61,22 @@ class CustomDirAudioDataset(BaseDataset):
                 print(f"Warning: failed to load {audio_file}: {e}")
                 continue
 
+            mouth1, mouth2 = str(audio_file.stem).split("_")
+            mouth1_path = self._mouth_path / Path(f"{mouth1}.npz")
+            mouth2_path = self._mouth_path / Path(f"{mouth2}.npz")
+            mouth1_path = str(mouth1_path.absolute().resolve())
+            mouth2_path = str(mouth2_path.absolute().resolve())
+
             index_element = {
                 "mix_path": str(audio_file.absolute().resolve()),
                 "audio_len": audio_len,
+                "mouth1_path": mouth1_path,
+                "mouth2_path": mouth2_path
             }
 
-            for source_idx, source_dir in enumerate(self._sources):
+            for source_dir in self._sources:
                 index_element.update({f"{source_dir.name}_path": str(
                     (source_dir / audio_file.name).absolute().resolve())})
-
-                if self._video_dir is not None:
-                    mouth_file = self._video_dir / \
-                        Path(f"{str(audio_file.stem).split('_')[source_idx]}.npz")
-                    index_element.update(
-                        {f"{source_dir.name}_video_path": str(mouth_file.absolute().resolve())})
 
             index.append(index_element)
 
