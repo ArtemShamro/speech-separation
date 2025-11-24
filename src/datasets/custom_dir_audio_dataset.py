@@ -61,14 +61,11 @@ class CustomDirAudioDataset(BaseDataset):
                 print(f"Warning: failed to load {audio_file}: {e}")
                 continue
 
-            if self._mouth_path is not None:
-                mouth1, mouth2 = str(audio_file.stem).split("_")
-                mouth1_path = self._mouth_path / Path(f"{mouth1}.npz")
-                mouth2_path =  self._mouth_path / Path(f"{mouth2}.npz")
-                mouth1_path = str(mouth1_path.absolute().resolve())
-                mouth2_path = str(mouth2_path.absolute().resolve())
-            else:
-                mouth1_path = mouth2_path = None
+            mouth1, mouth2 = str(audio_file.stem).split("_")
+            mouth1_path = self._mouth_path / Path(f"{mouth1}.npz")
+            mouth2_path = self._mouth_path / Path(f"{mouth2}.npz")
+            mouth1_path = str(mouth1_path.absolute().resolve())
+            mouth2_path = str(mouth2_path.absolute().resolve())
 
             index_element = {
                 "mix_path": str(audio_file.absolute().resolve()),
@@ -84,4 +81,3 @@ class CustomDirAudioDataset(BaseDataset):
             index.append(index_element)
 
         return index
-        
