@@ -263,7 +263,7 @@ class BaseTrainer:
             profiler_ctx = profiler
         else:
             profiler_ctx = contextlib.nullcontext()
-
+    
         with profiler_ctx as prof:
             for batch_idx, batch in enumerate(
                 tqdm(self.train_dataloader, desc="train",

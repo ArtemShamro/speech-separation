@@ -214,6 +214,7 @@ class ModelLoader:
         else:
             state_dict = align_state_dict_keys(checkpoint)
 
+        state_dict = self.filter_state_dict(model, state_dict)
         missing, unexpected = model.load_state_dict(state_dict, strict=False)
 
         if missing:
@@ -222,3 +223,17 @@ class ModelLoader:
             self.logger.warning(f"Unexpected keys in state_dict: {unexpected}")
 
         return model
+
+    def filter_state_dict(self, model, state_dict):
+        filtered = {}
+        model_keys = dict(model.state_dict())
+
+        for k, v in state_dict.items():
+            if k not in model_keys:
+                continue
+            if v.shape != model_keys[k].shape:
+                # shape mismatch — пропускаем
+                continue
+            filtered[k] = v
+
+        return filtered

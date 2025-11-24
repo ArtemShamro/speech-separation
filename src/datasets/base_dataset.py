@@ -197,7 +197,7 @@ class BaseDataset(Dataset):
         """
         if self.instance_transforms is not None:
             for transform_name in self.instance_transforms.keys():
-                if transform_name == "get_spectrogram" or transform_name == "audio" or transform_name == "audio_consistent":
+                if transform_name in ["get_spectrogram", "audio", "audio_consistent", "video"]:
                     continue  # skip special key
                 instance_data[transform_name] = self.instance_transforms[
                     transform_name
